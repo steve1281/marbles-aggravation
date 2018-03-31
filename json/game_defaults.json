@@ -1,0 +1,11 @@
+{
+  "start_player_one": 1,
+  "start_player_two": 13,
+  "start_player_three": 25,
+  "start_player_four": 37,
+  "the_center": 0,
+  "exit_center_player_one": 42,
+  "exit_center_player_two": 6,
+  "exit_center_player_three": 18,
+  "exit_center_player_four": 30
+}
