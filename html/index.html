@@ -42,6 +42,15 @@ for (c=0; c< brickColumnCount; c++) {
 }
 
 var score =0;
+var lives=3;
+
+// draw Lives
+function drawLives()
+{
+    ctx.font = "16px Arial";
+    ctx.fillStype = "#0095DD";
+    ctx.fillText("Lives: " + lives, canvas.width-65, 20);
+}
 
 // draw Score
 function drawScore()
@@ -102,8 +111,17 @@ function drawBall() {
         if ( x > paddleX && x < paddleX + paddleWidth) {
             dy = -dy;
         } else {
-            alert("game over");
-            document.location.reload();
+            lives--;
+            if (!lives) {
+                alert("game over");
+                document.location.reload();
+            } else {
+                x = canvas.width/2;
+                y = canvas.height-30;
+                dx = 2;
+                dy = -2;
+                paddleX  = (canvas.width - paddleWidth)/2;
+           }
         }
     }
     if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
@@ -129,25 +147,55 @@ function drawPaddle() {
     ctx.fill();
     ctx.closePath();
 }
-    
-// main draw loop
-function draw() {
+   
+function clearScreen()
+{
     ctx.clearRect(0,0, canvas.width, canvas.height);
-    drawBricks();
-    drawBall();
-    drawPaddle();
-    collisionDetection();
-    drawScore();
+}
+
+function updateBallPosition()
+{
     x += dx;
     y += dy;
+} 
+
+// main draw loop
+function draw() {
+    // request future draw call.
+    requestAnimationFrame(draw);
+    now = Date.now();
+    elapsed = now-last;
+    if (elapsed > fpsInterval) {
+        last = now - (elapsed % fpsInterval);
+        clearScreen();
+        drawBricks();
+        drawBall();
+        drawPaddle();
+        collisionDetection();
+        drawScore();
+        drawLives();
+    }
+    updateBallPosition();
 }
 
 // refresh rate and loop hookup
-setInterval(draw, 10);
+// setInterval(draw, 10);
+var fpsInterval = 1000/60;  
+var last=Date.now();
+var startTime=last;
+draw();
 
 // event listeners
 document.addEventListener("keydown", keyDownHandler,  false);
 document.addEventListener("keyup", keyUpHandler,  false);
+document.addEventListener("mousemove", mouseMoveHandler, false);
+
+function mouseMoveHandler(e) {
+    var relativeX = e.clientX - canvas.offsetLeft;
+    if (relativeX >0 && relativeX < canvas.width) {
+        paddleX = relativeX - paddleWidth/2;
+    }
+}
 
 function keyDownHandler(e) {
     if (e.keyCode == 39) {
