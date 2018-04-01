@@ -1,6 +1,8 @@
 package com.sfalcigno.server;
 
+import com.sfalcigno.Constants;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -14,6 +16,8 @@ public class Server {
         URI baseUri = UriBuilder.fromUri("http://0.0.0.0/").port(port).build();
         ResourceConfig resourceConfig = new ServerApp();
         HttpServer server = GrizzlyHttpServerFactory.createHttpServer(baseUri, resourceConfig);
+        // add a static path
+        server.getServerConfiguration().addHttpHandler(new StaticHttpHandler(Constants.HTML_ROOT), "/game");
         System.out.println("press any key to stop server");
         System.in.read();
     }

@@ -1,16 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8" />
-<title>Test Canvas</title>
-<style>
-   * { padding:0; margin: 0; }
-   canvas { background: #eee; display: block; margin: 0 auto; }
-</style>
-</head>
-<body>
-<canvas id="myCanvas" width="480" height="320"></canvas>
-<script>
 // hook into the canvas
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
@@ -213,10 +200,4 @@ function keyUpHandler(e) {
     }
 }
 
-        
-
-</script>
-
-</body>
-</html>
 
