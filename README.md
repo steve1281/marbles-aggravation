@@ -14,8 +14,13 @@ Most of the server side code will be Java, using grizzly, jackson, and jersey. I
 java -jar ./build/libs/marbles-aggravation.jar
 ```
 
-## Testing
+## Testing backend
 ```
 curl -X GET http://192.168.100.167:9998/board | python -m json.tool
 curl -X POST http://localhost:9998/board -H Content-Type:application/json -d @json/set_game_board.json
 ```
+
+## Testing website
+* http://localhost:9998/game/marbles.html
+* http://localhost:9998/game/breakout.html
+
