@@ -8,6 +8,13 @@ var PICKMARBLE = 3;
 var PICKDEST = 4;
 var WIN = 5;
 var game_state = WAITING;
+var my_player_id = 2;
+
+// active player info
+var current_player = 0;
+var player_name = "Player One";
+var last_roll = 0;
+
 
 // this is the board_grid. 
 // - a zero means no divot
@@ -92,7 +99,15 @@ function loadboard()
 // -- set player
 function setplayer()
 {
-    console.log(this.responseText);
+    myObj = JSON.parse(this.responseText);
+
+    current_player = myObj.current_player;
+    player_name = myObj.player_name;
+    last_roll = myObj.last_roll;
+
+    if (current_player == my_player_id) {
+        game_state = ROLLDIE;
+    }
 }
 
 function xhrSuccess() { 
@@ -131,7 +146,7 @@ function drawText()
 {
     ctx.font = "16px Arial";
     ctx.fillStyle = "#0095DD";
-    ctx.fillText("Ready player 1", canvas.width-165, 20);
+    ctx.fillText("Me: " + my_player_id + " Current: " + current_player, canvas.width-165, 20);
 }
 
 // main draw loop
