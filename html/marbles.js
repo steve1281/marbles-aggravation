@@ -2,13 +2,12 @@
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 
-
-function drawText()
-{
-    ctx.font = "16px Arial";
-    ctx.fillStyle = "#0095DD";
-    ctx.fillText("Ready player 1", canvas.width-165, 20);
-}
+var WAITING = 1;
+var ROLLDIE = 2;
+var PICKMARBLE = 3;
+var PICKDEST = 4;
+var WIN = 5;
+var game_state = WAITING;
 
 // this is the board_grid. 
 // - a zero means no divot
@@ -85,6 +84,55 @@ function clearScreen()
     ctx.clearRect(0,0, canvas.width, canvas.height);
 }
 
+// -- load board
+function loadboard()
+{
+    console.log(this.responseText);
+}
+// -- set player
+function setplayer()
+{
+    console.log(this.responseText);
+}
+
+function xhrSuccess() { 
+    this.callback.apply(this, this.arguments); 
+}
+
+function xhrError() { 
+    console.error(this.statusText); 
+}
+
+function get(url, callback){
+    var xhr = new XMLHttpRequest();
+    xhr.callback = callback;
+    xhr.arguments = Array.prototype.slice.call(arguments, 2);
+    xhr.onload = xhrSuccess;
+    xhr.onerror = xhrError;
+    xhr.open("GET", url, true);
+    xhr.send(null);
+}
+function get_board()
+{
+    get("/board", loadboard);
+    if (game_state == WAITING) {
+        setTimeout(get_board, 5000);
+    }
+}
+function get_player()
+{
+    get("/player", setplayer);
+    if (game_state == WAITING) {
+        setTimeout(get_player, 5000);
+    }
+}
+
+function drawText()
+{
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "#0095DD";
+    ctx.fillText("Ready player 1", canvas.width-165, 20);
+}
 
 // main draw loop
 function draw() {
@@ -105,6 +153,9 @@ var fpsInterval = 1000/60;
 var last=Date.now();
 var startTime=last;
 draw();
+get_board();
+get_player();
+
 
 // listen for mouse clicks, determine if its on a divot
 // (need ot decide on actual behaviour soon, but for now alert which divot got clicked)
