@@ -5,6 +5,8 @@ This is a local take on the game of aggravation; with local rules.
 Most of the server side code will be Java, using grizzly, jackson, and jersey. I use gradle for make-ing.
 (Apr 2, 2018: added static httphandler and some html) 
 
+(Apr 5, 2018: moved the tests out of the json folder. The json folder represents the game in startup
+
 ## config
 * added a marbles.properties file, set PORT and ROOT there.
 
