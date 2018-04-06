@@ -2,16 +2,19 @@
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 //game constants
+
+//position of the die
 var die_offsetx = 500;
 var die_offsety = 60;
 
+// game states
 var WAITING = 1;
 var ROLLDIE = 2;
 var PICKMARBLE = 3;
 var PICKDEST = 4;
 var WIN = 5;
 var game_state = WAITING;
-var my_player_id = 2;
+var my_player_id = 1; // this needs to be set by a call to the back end.
 
 // active player info
 var current_player = 0;
@@ -44,6 +47,7 @@ board_grid[12] = [ 0, 0, 12, 0, 0, 0, 1, 1, 1, 0, 0, 0, 42, 0, 0];
 board_grid[13] = [ 0, 13, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 43, 0];
 board_grid[14] = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
+// draw a board
 function drawBoard() {
     for (c=0; c<15; c++) {
         for (r=0;r<15; r++) {
@@ -87,25 +91,28 @@ function drawBoard() {
     }
     ctx.closePath();
 }
+
+// draw a die pip
 function drawPip(x,y)
 {
-ctx.beginPath();
-ctx.fillStyle="black";
-ctx.arc(die_offsetx + x, die_offsety + y, 2, 0, Math.PI*2);
-ctx.fill();
-ctx.stroke();
-ctx.closePath();
+    ctx.beginPath();
+    ctx.fillStyle="black";
+    ctx.arc(die_offsetx + x, die_offsety + y, 2, 0, Math.PI*2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.closePath();
 }
 
+// draw a die
 function drawDie(rollValue) 
 {
-ctx.beginPath();
-ctx.fillStyle="black";
-ctx.rect(die_offsetx-2, die_offsety-2, 24,24);
-ctx.stroke();
-ctx.closePath();
+    ctx.beginPath();
+    ctx.fillStyle="black";
+    ctx.rect(die_offsetx-2, die_offsety-2, 24,24);
+    ctx.stroke();
+    ctx.closePath();
 
-switch(rollValue) {
+    switch(rollValue) {
     case 1:
         drawPip(10,10);
         break;
@@ -140,24 +147,11 @@ switch(rollValue) {
         drawPip(18,18);
         break;
     default:
-        break;
-}
-/*
-drawPip(2,2);
-drawPip(2,10);
-drawPip(2,18);
-
-drawPip(10,2);
-drawPip(10,10);
-drawPip(10,18);
-
-drawPip(18,2);
-drawPip(18,10);
-drawPip(18,18);
-*/
+        break; // leave blank.
+    }
 }
 
- 
+// clear screen 
 function clearScreen()
 {
     ctx.clearRect(0,0, canvas.width, canvas.height);
@@ -166,11 +160,19 @@ function clearScreen()
 // -- load board
 function loadboard()
 {
+    if (game_state != WAITING) {
+        return;
+    }
     console.log(this.responseText);
 }
-// -- set player
+
+// -- set player, called once json data arrives.
 function setplayer()
 {
+    if (game_state != WAITING) {
+        return;
+    }
+
     myObj = JSON.parse(this.responseText);
 
     current_player = myObj.current_player;
@@ -182,11 +184,41 @@ function setplayer()
     }
 }
 
+// convert game state to string
+function game_state_toString()
+{
+    var result = "";
+    switch (game_state) {
+        case WAITING:
+            result = "WAITING";
+            break;
+        case ROLLDIE:
+            result = "ROLLDIE";
+            break;
+        case PICKMARBLE:
+            result = "PICKMARBLE";
+            break;
+        case PICKDEST:
+            result = "PICKDEST";
+            break;
+        case WIN:
+            result = "WIN";
+            break;
+        default:
+            result = "UNKNOWN";
+            break;
+    }
+    return result;
+
+}
+
+// -- draw misc player name, id, etc etc
 function drawText()
 {
     ctx.font = "16px Arial";
     ctx.fillStyle = "#0095DD";
     ctx.fillText("Me: " + my_player_id + " Current: " + current_player, canvas.width-165, 20);
+    ctx.fillText("State: " + game_state_toString(), canvas.width-165, 40);
 }
 
 // main draw loop
@@ -208,14 +240,56 @@ function draw() {
 var fpsInterval = 1000/60;  
 var last=Date.now();
 var startTime=last;
+
+// call drawing loop
 draw();
+
+// call get board (must be called at least once)
 get_board();
+// call get player -- modify this; we should register ourselves, and that should call this.
 get_player();
 
+// handle "divot" selection - could be marble or divot.
+function handleDivotSelection(pos)
+{
+      divotx = Math.round((pos.x -30)/30); // divot, as in hole in the board for a marble.
+      divoty = Math.round((pos.y -30)/30);
+      if (divotx > 14 || divoty> 14) { // not on the grid, maybe a button or other ui?
+      } else if (board_grid[divotx][divoty]) {
+          if (game_state == PICKMARBLE) {
+              // do some work (eg, is it a marble, is it your marble, highlight the marble, etc etc)
+              alert('picked marble at: ' + divotx + ',' + divoty);
+              game_state = PICKDEST;
+          } else { // PICKDEST
+              // do some work (eg. is it a valid dest (are you jumping your own marble, is it within last_roll places, etc etc)
+              alert('picked destination at: ' + divotx + ',' + divoty);
+              if (last_roll == 6 || last_roll == 1) { // and the roll was used...
+                  game_state = ROLLDIE;
+              } else {
+                  game_state = WAITING;
+                  current_player = -1;
+                  put_next_player();
+                  get_board();
+              }
+          }
+      }
+}
 
-// listen for mouse clicks, determine if its on a divot
-// (need ot decide on actual behaviour soon, but for now alert which divot got clicked)
+// handle die roll.
+function handleRollDie(pos) 
+{
+    if (pos.x > die_offsetx-2 && pos.x < die_offsetx+24 ){
+        if (pos.y > die_offsety-2 && pos.y < die_offsety + 24) {
+            last_roll=Math.floor(6*Math.random())+1; 
+            game_state = PICKMARBLE;
+        }
+    }
+}
+
+// listen for mouse clicks
+// manage based on game state
 canvas.addEventListener('click', (evt) => {
+
   var rect = canvas.getBoundingClientRect(), // abs. size of element
   scaleX = canvas.width / rect.width,    // relationship bitmap vs. element for X
   scaleY = canvas.height / rect.height;  // relationship bitmap vs. element for Y
@@ -223,24 +297,13 @@ canvas.addEventListener('click', (evt) => {
       x: (evt.clientX - rect.left) * scaleX,   // scale mouse coordinates after they have
       y: (evt.clientY - rect.top) * scaleY     // been adjusted to be relative to element
   };
+  
   if (game_state == PICKDEST || game_state == PICKMARBLE ) {
-      divotx = Math.round((pos.x -30)/30); // divot, as in hole in the board for a marble.
-      divoty = Math.round((pos.y -30)/30);
-      if (divotx > 14 || divoty> 14) { // not on the grid, maybe a button or other ui?
-      } else if (board_grid[divotx][divoty]) {
-          alert('clicked on:' + divotx + ',' + divoty);
-      }
+      handleDivotSelection(pos);
+  } else if (game_state == ROLLDIE) { 
+      handleRollDie(pos);
   }
 
-  if (game_state == ROLLDIE) { 
-     if (pos.x > die_offsetx-2 && pos.x < die_offsetx+24 ){
-        if (pos.y > die_offsety-2 && pos.y < die_offsety + 24) {
-           last_roll=Math.floor(6*Math.random())+1; 
-           // if the roll is usable 
-           game_state = PICKMARBLE;
-        }
-     }
-  }
 });
 
 

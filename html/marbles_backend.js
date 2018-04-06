@@ -29,4 +29,11 @@ function get_player()
         setTimeout(get_player, 5000);
     }
 }
-
+function put_next_player()
+{
+    // put to server needs to be done
+    // and then fetch the next player
+    if (game_state == WAITING) {
+        setTimeout(get_player, 5000);
+    }
+}
