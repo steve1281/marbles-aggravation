@@ -1,6 +1,9 @@
 // hook into the canvas
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
+//game constants
+var die_offsetx = 500;
+var die_offsety = 60;
 
 var WAITING = 1;
 var ROLLDIE = 2;
@@ -84,6 +87,75 @@ function drawBoard() {
     }
     ctx.closePath();
 }
+function drawPip(x,y)
+{
+ctx.beginPath();
+ctx.fillStyle="black";
+ctx.arc(die_offsetx + x, die_offsety + y, 2, 0, Math.PI*2);
+ctx.fill();
+ctx.stroke();
+ctx.closePath();
+}
+
+function drawDie(rollValue) 
+{
+ctx.beginPath();
+ctx.fillStyle="black";
+ctx.rect(die_offsetx-2, die_offsety-2, 24,24);
+ctx.stroke();
+ctx.closePath();
+
+switch(rollValue) {
+    case 1:
+        drawPip(10,10);
+        break;
+    case 2:
+        drawPip(2,2);
+        drawPip(18,18);
+        break;
+    case 3:
+        drawPip(2,2);
+        drawPip(10,10);
+        drawPip(18,18);
+        break;
+    case 4:
+        drawPip(2,2);
+        drawPip(2,18);
+        drawPip(18,2);
+        drawPip(18,18);
+        break;
+    case 5:
+        drawPip(2,2);
+        drawPip(2,18);
+        drawPip(10,10);
+        drawPip(18,2);
+        drawPip(18,18);
+        break;
+    case 6:
+        drawPip(2,2);
+        drawPip(2,18);
+        drawPip(10,2);
+        drawPip(10,18);
+        drawPip(18,2);
+        drawPip(18,18);
+        break;
+    default:
+        break;
+}
+/*
+drawPip(2,2);
+drawPip(2,10);
+drawPip(2,18);
+
+drawPip(10,2);
+drawPip(10,10);
+drawPip(10,18);
+
+drawPip(18,2);
+drawPip(18,10);
+drawPip(18,18);
+*/
+}
 
  
 function clearScreen()
@@ -128,6 +200,7 @@ function draw() {
         clearScreen();
         drawBoard();
         drawText();
+        drawDie(last_roll);
     }
 }
 
@@ -150,13 +223,24 @@ canvas.addEventListener('click', (evt) => {
       x: (evt.clientX - rect.left) * scaleX,   // scale mouse coordinates after they have
       y: (evt.clientY - rect.top) * scaleY     // been adjusted to be relative to element
   };
-  divotx = Math.round((pos.x -30)/30); // divot, as in hole in the board for a marble.
-  divoty = Math.round((pos.y -30)/30);
-  if (divotx > 14 || divoty> 14) { // not on the grid, maybe a button or other ui?
-  } else if (board_grid[divotx][divoty]) {
-      alert('clicked on:' + divotx + ',' + divoty);
+  if (game_state == PICKDEST || game_state == PICKMARBLE ) {
+      divotx = Math.round((pos.x -30)/30); // divot, as in hole in the board for a marble.
+      divoty = Math.round((pos.y -30)/30);
+      if (divotx > 14 || divoty> 14) { // not on the grid, maybe a button or other ui?
+      } else if (board_grid[divotx][divoty]) {
+          alert('clicked on:' + divotx + ',' + divoty);
+      }
   }
 
+  if (game_state == ROLLDIE) { 
+     if (pos.x > die_offsetx-2 && pos.x < die_offsetx+24 ){
+        if (pos.y > die_offsety-2 && pos.y < die_offsety + 24) {
+           last_roll=Math.floor(6*Math.random())+1; 
+           // if the roll is usable 
+           game_state = PICKMARBLE;
+        }
+     }
+  }
 });
 
 
