@@ -14,12 +14,20 @@ var PICKMARBLE = 3;
 var PICKDEST = 4;
 var WIN = 5;
 var game_state = WAITING;
-var my_player_id = 1; // this needs to be set by a call to the back end.
 
 // active player info
 var current_player = 0;
-var player_name = "Player One";
+var player_name = "";
 var last_roll = 0;
+
+// player colors
+var RED = 1;
+var GREEN = 2;
+var BLUE = 3;
+var YELLOW = 4;
+var colorToString = ["WHITE", "RED", "GREEN", "BLUE", "YELLOW"];
+
+var my_player_id = RED; // this needs to be set by a call to the back end.
 
 
 // this is the board_grid. 
@@ -50,9 +58,9 @@ board_grid[14] = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 // draw a board
 function drawBoard() {
     var marked = 0;
-    for (c=0; c<15; c++) {
-        for (r=0;r<15; r++) {
-            divot = board_grid[r][c];
+    for (r=0; r<15; r++) {
+        for (c=0;c<15; c++) {
+            divot = board_grid[c][r];
             if (divot > 99) { // marked 
                 divot = divot / 100;
                 marked = 1;
@@ -64,7 +72,7 @@ function drawBoard() {
                     case 11:
                     case 12:
                     case 13: 
-                        ctx.fillStyle = "blue";
+                        ctx.fillStyle = "red";
                         break;
                     case 20:
                     case 21:
@@ -76,7 +84,7 @@ function drawBoard() {
                     case 31:
                     case 32:
                     case 33: 
-                        ctx.fillStyle = "red";
+                        ctx.fillStyle = "blue";
                         break;
                     case 40:
                     case 41:
@@ -226,7 +234,7 @@ function drawText()
 {
     ctx.font = "16px Arial";
     ctx.fillStyle = "#0095DD";
-    ctx.fillText("Me: " + my_player_id + " Current: " + current_player, canvas.width-165, 20);
+    ctx.fillText("Me: " + colorToString[my_player_id] + " Current: " + colorToString[current_player], canvas.width-165, 20);
     ctx.fillText("State: " + game_state_toString(), canvas.width-165, 40);
 }
 
@@ -257,29 +265,57 @@ draw();
 get_board();
 // call get player -- modify this; we should register ourselves, and that should call this.
 get_player();
-var picked_marble={divotx:0,divoty:0,marble:0};
+var picked_marble={col:0,row:0,marble:0};
+
+function isMyMarble(col, row )
+{
+    var result = false;
+    var marbleAt = board_grid[col][row];
+
+    switch (my_player_id) {
+        case RED:
+            if (marbleAt == 10 || marbleAt == 11 || marbleAt == 12 || marbleAt == 13) result = true;
+            break;
+        case GREEN:
+            if (marbleAt == 20 || marbleAt == 21 || marbleAt == 22 || marbleAt == 23) result = true;
+            break;
+        case BLUE:
+            if (marbleAt == 30 || marbleAt == 31 || marbleAt == 32 || marbleAt == 33) result = true;
+            break;
+        case YELLOW:
+            if (marbleAt == 40 || marbleAt == 41 || marbleAt == 42 || marbleAt == 43) result = true;
+            break;
+        default:
+            break;
+     }
+ 
+    return result;
+}
 
 // handle "divot" selection - could be marble or divot.
 function handleDivotSelection(pos)
 {
-      divotx = Math.round((pos.x -30)/30); // divot, as in hole in the board for a marble.
-      divoty = Math.round((pos.y -30)/30);
-      if (board_grid[divoty][divotx]) {
+      divot_col = Math.round((pos.x -30)/30); // divot, as in hole in the board for a marble.
+      divot_row = Math.round((pos.y -30)/30);
+      if (board_grid[divot_col][divot_row]) {
           if (game_state == PICKMARBLE) {
               // do some work (eg, is it a marble, is it your marble, highlight the marble, etc etc)
-              if (board_grid[divoty][divotx] > 1) { // picked a marble
-                  picked_marble.divotx = divotx;
-                  picked_marble.divoty = divoty;
-                  picked_marble.marble = board_grid[divoty][divotx];
-                  board_grid[divoty][divotx]= board_grid[divoty][divotx] * 100; 
-                  game_state = PICKDEST;
+              
+              if (board_grid[divot_col][divot_row] > 1) { // picked a marble
+                  if (isMyMarble(divot_col,divot_row)) {
+                      picked_marble.col =  divot_col;
+                      picked_marble.row = divot_row;
+                      picked_marble.marble = board_grid[divot_col][divot_row];
+                      board_grid[divot_col][divot_row]= board_grid[divot_col][divot_row] * 100; 
+                      game_state = PICKDEST;
+                  }
               }
           } else { // PICKDEST
               // do some work (eg. is it a valid dest (are you jumping your own marble, is it within last_roll places, etc etc)
-              if (board_grid[divoty][divotx] == 1) { // picked an empty divot (what if killing someone? or jumping self!
+              if (board_grid[divot_col][divot_row] == 1) { // picked an empty divot (what if killing someone? or jumping self!
                   // assume we are happy for now. 
-                  board_grid[divoty][divotx] = picked_marble.marble;
-                  board_grid[picked_marble.divoty][picked_marble.divotx] = 1;
+                  board_grid[divot_col][divot_row] = picked_marble.marble;
+                  board_grid[picked_marble.col][picked_marble.row] = 1;
                   if (last_roll == 6 || last_roll == 1) { // and the roll was used...
                       game_state = ROLLDIE;
                   } else {
@@ -289,8 +325,8 @@ function handleDivotSelection(pos)
                   put_board();
               } else {
                   // invalid desistination, switch gamestate to PICKMARBLE
-                  board_grid[picked_marble.divoty][picked_marble.divotx]= board_grid[picked_marble.divoty][picked_marble.divotx] / 100; 
-                  picked_marble={divotx:0,divoty:0,marble:0};
+                  board_grid[picked_marble.col][picked_marble.row]= board_grid[picked_marble.col][picked_marble.row] / 100; 
+                  picked_marble={col:0,row:0,marble:0};
                   game_state=PICKMARBLE;
                   
               }
