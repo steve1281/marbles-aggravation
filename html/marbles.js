@@ -49,9 +49,14 @@ board_grid[14] = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 // draw a board
 function drawBoard() {
+    var marked = 0;
     for (c=0; c<15; c++) {
         for (r=0;r<15; r++) {
             divot = board_grid[r][c];
+            if (divot > 99) { // marked 
+                divot = divot / 100;
+                marked = 1;
+            }
             if (divot>0) {
                 ctx.beginPath();
                 switch (divot) { // select a player color if there is a marble in place.
@@ -81,6 +86,10 @@ function drawBoard() {
                         break;
                     default: // or a default blank divot color.
                         ctx.fillStyle = "#F5F5F5";
+                }
+                if (marked) {
+                    ctx.fillStyle = "pink";
+                    marked = 0;
                 }
                 ctx.arc(30*c+30,30*r+30,10,0,Math.PI*2);
                 ctx.fill();
@@ -262,6 +271,7 @@ function handleDivotSelection(pos)
                   picked_marble.divotx = divotx;
                   picked_marble.divoty = divoty;
                   picked_marble.marble = board_grid[divoty][divotx];
+                  board_grid[divoty][divotx]= board_grid[divoty][divotx] * 100; 
                   game_state = PICKDEST;
               }
           } else { // PICKDEST
