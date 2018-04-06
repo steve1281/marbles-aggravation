@@ -234,8 +234,9 @@ function drawText()
 {
     ctx.font = "16px Arial";
     ctx.fillStyle = "#0095DD";
-    ctx.fillText("Me: " + colorToString[my_player_id] + " Current: " + colorToString[current_player], canvas.width-165, 20);
-    ctx.fillText("State: " + game_state_toString(), canvas.width-165, 40);
+    ctx.fillText("Me: " + colorToString[my_player_id] , 25, 20);
+    ctx.fillText("Current: " + colorToString[current_player], 205, 20);
+    ctx.fillText("State: " + game_state_toString(), canvas.width-165, 20);
 }
 
 // main draw loop
