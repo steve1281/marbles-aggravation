@@ -287,7 +287,13 @@ function handleDivotSelection(pos)
                       put_next_player();
                   }
                   put_board();
-             }
+              } else {
+                  // invalid desistination, switch gamestate to PICKMARBLE
+                  board_grid[picked_marble.divoty][picked_marble.divotx]= board_grid[picked_marble.divoty][picked_marble.divotx] / 100; 
+                  picked_marble={divotx:0,divoty:0,marble:0};
+                  game_state=PICKMARBLE;
+                  
+              }
           }
       }
 }
