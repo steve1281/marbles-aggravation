@@ -37,3 +37,11 @@ function put_next_player()
         setTimeout(get_player, 5000);
     }
 }
+function put_board()
+{
+    // need put the changes we made to the board
+    if (game_state == WAITING) {
+        setTimeout(get_player, 5000);
+    }
+}
+

@@ -248,29 +248,36 @@ draw();
 get_board();
 // call get player -- modify this; we should register ourselves, and that should call this.
 get_player();
+var picked_marble={divotx:0,divoty:0,marble:0};
 
 // handle "divot" selection - could be marble or divot.
 function handleDivotSelection(pos)
 {
       divotx = Math.round((pos.x -30)/30); // divot, as in hole in the board for a marble.
       divoty = Math.round((pos.y -30)/30);
-      if (divotx > 14 || divoty> 14) { // not on the grid, maybe a button or other ui?
-      } else if (board_grid[divotx][divoty]) {
+      if (board_grid[divoty][divotx]) {
           if (game_state == PICKMARBLE) {
               // do some work (eg, is it a marble, is it your marble, highlight the marble, etc etc)
-              alert('picked marble at: ' + divotx + ',' + divoty);
-              game_state = PICKDEST;
+              if (board_grid[divoty][divotx] > 1) { // picked a marble
+                  picked_marble.divotx = divotx;
+                  picked_marble.divoty = divoty;
+                  picked_marble.marble = board_grid[divoty][divotx];
+                  game_state = PICKDEST;
+              }
           } else { // PICKDEST
               // do some work (eg. is it a valid dest (are you jumping your own marble, is it within last_roll places, etc etc)
-              alert('picked destination at: ' + divotx + ',' + divoty);
-              if (last_roll == 6 || last_roll == 1) { // and the roll was used...
-                  game_state = ROLLDIE;
-              } else {
-                  game_state = WAITING;
-                  current_player = -1;
-                  put_next_player();
-                  get_board();
-              }
+              if (board_grid[divoty][divotx] == 1) { // picked an empty divot (what if killing someone? or jumping self!
+                  // assume we are happy for now. 
+                  board_grid[divoty][divotx] = picked_marble.marble;
+                  board_grid[picked_marble.divoty][picked_marble.divotx] = 1;
+                  if (last_roll == 6 || last_roll == 1) { // and the roll was used...
+                      game_state = ROLLDIE;
+                  } else {
+                      game_state = WAITING;
+                      put_next_player();
+                  }
+                  put_board();
+             }
           }
       }
 }
