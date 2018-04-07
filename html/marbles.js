@@ -202,33 +202,6 @@ function setplayer()
     }
 }
 
-// convert game state to string
-function game_state_toString()
-{
-    var result = "";
-    switch (game_state) {
-        case WAITING:
-            result = "WAITING";
-            break;
-        case ROLLDIE:
-            result = "ROLLDIE";
-            break;
-        case PICKMARBLE:
-            result = "PICKMARBLE";
-            break;
-        case PICKDEST:
-            result = "PICKDEST";
-            break;
-        case WIN:
-            result = "WIN";
-            break;
-        default:
-            result = "UNKNOWN";
-            break;
-    }
-    return result;
-
-}
 
 // -- draw misc player name, id, etc etc
 function drawText()
@@ -344,13 +317,45 @@ function handleDivotSelection(pos)
       }
 }
 
+function checkHooseGowLock()
+{
+    var full = false;
+    switch (my_player_id) {
+        case GREEN:
+            if (board_grid[1][1]+board_grid[2][2]+board_grid[3][3]+board_grid[4][4] > 20*4) { full=true; }
+            break;
+        case BLUE:
+            if (board_grid[1][13]+board_grid[2][12]+board_grid[3][11]+board_grid[4][10] > 30*4) { full=true; }
+            break;
+        case YELLOW:
+            if (board_grid[13][13]+board_grid[12][12]+board_grid[11][11]+board_grid[10][10] > 40*4) { full=true; }
+            break;
+        case RED:
+            if (board_grid[13][1]+board_grid[12][2]+board_grid[11][3]+board_grid[10][4] > 10*4) { full=true; }
+            break;
+        default:
+            break;
+     }
+     if (full && last_roll!=1 && last_roll!=6) {
+         return true;
+     } else {
+         return false;
+     }
+}
+
 // handle die roll.
 function handleRollDie(pos) 
 {
     if (pos.x > die_offsetx-2 && pos.x < die_offsetx+24 ){
         if (pos.y > die_offsety-2 && pos.y < die_offsety + 24) {
             last_roll=Math.floor(6*Math.random())+1; 
-            game_state = PICKMARBLE;
+            // can my_player_id use this roll?
+            if (checkHooseGowLock()) {
+                game_state = WAITING;
+                current_player++; if (current_player > 4) {current_player = 1;}
+            } else {           
+                game_state = PICKMARBLE;
+            }
             updatePlayerInfo();
         }
     }
