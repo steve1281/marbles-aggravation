@@ -40,23 +40,6 @@ var my_player_id = parseInt(getParameterByName("player")); // RED; // this needs
 // - 40,41,42,43 - player four marbles
 // 
 var board_grid = []
-/*
-board_grid[0] = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-board_grid[1] = [ 0, 20, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 30, 0];
-board_grid[2] = [ 0, 0, 21, 0, 0, 0, 1, 1, 1, 0, 0, 0, 31, 0, 0];
-board_grid[3] = [ 0, 0, 0, 22, 0, 0, 1, 1, 1, 0, 0, 32, 0, 0, 0];
-board_grid[4] = [ 0, 0, 0, 0, 23, 0, 1, 1, 1, 0, 33, 0, 0, 0, 0];
-board_grid[5] = [ 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0];
-board_grid[6] = [ 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0];
-board_grid[7] = [ 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0];
-board_grid[8] = [ 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0];
-board_grid[9] = [ 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0];
-board_grid[10] = [ 0, 0, 0, 0, 10, 0, 1, 1, 1, 0, 40, 0, 0, 0, 0];
-board_grid[11] = [ 0, 0, 0, 11, 0, 0, 1, 1, 1, 0, 0, 41, 0, 0, 0];
-board_grid[12] = [ 0, 0, 12, 0, 0, 0, 1, 1, 1, 0, 0, 0, 42, 0, 0];
-board_grid[13] = [ 0, 13, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 43, 0];
-board_grid[14] = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-*/
 
 // draw a board
 function drawBoard() {
@@ -127,9 +110,10 @@ function drawPip(x,y)
 function drawDie(rollValue) 
 {
     ctx.beginPath();
-    ctx.fillStyle="black";
+    ctx.fillStyle="white";
     ctx.rect(die_offsetx-2, die_offsety-2, 24,24);
     ctx.stroke();
+    ctx.fill();
     ctx.closePath();
 
     switch(rollValue) {
@@ -208,13 +192,27 @@ function setplayer()
 // -- draw misc player name, id, etc etc
 function drawText()
 {
-    ctx.font = "16px Arial";
-    ctx.fillStyle = "#0095DD";
-    ctx.fillText("Me: " + colorToString[my_player_id] , 25, 20);
-    ctx.fillText("Current: " + colorToString[current_player], 205, 20);
-    ctx.fillText("State: " + game_state_toString(), canvas.width-165, 20);
+    ctx.font = "18px Arial";
+    ctx.fillStyle = "white"; //"#34282c";
+    ctx.fillText("My Colour: " + colorToString[my_player_id] , 25, 20);
+    ctx.fillText("Current Colour: " + colorToString[current_player], 225, 20);
+    ctx.fillStyle = "white"; //#f0f0f0";
+    ctx.fillText(" " + game_state_toString(), canvas.width-185, 20);
 }
 
+function drawWood()
+{
+    var blueprint_background = new Image();
+    blueprint_background.src = 'wood.jpg'; 
+    ctx.drawImage(blueprint_background,0,0);
+/*
+    blueprint_background.onload = function(){
+        var pattern = context.createPattern(this, "repeat");
+        context.fillStyle = pattern;
+        context.fill();
+    };
+*/
+}
 // main draw loop
 function draw() {
     // request future draw call.
@@ -224,6 +222,7 @@ function draw() {
     if (elapsed > fpsInterval) {
         last = now - (elapsed % fpsInterval);
         clearScreen();
+        drawWood();
         drawBoard();
         drawText();
         drawDie(last_roll);
