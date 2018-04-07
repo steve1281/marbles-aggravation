@@ -10,3 +10,31 @@ function getParameterByName(name, url) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
+// convert game state to string
+function game_state_toString()
+{
+    var result = "";
+    switch (game_state) {
+        case WAITING:
+            result = "WAITING";
+            break;
+        case ROLLDIE:
+            result = "ROLLDIE";
+            break;
+        case PICKMARBLE:
+            result = "PICKMARBLE";
+            break;
+        case PICKDEST:
+            result = "PICKDEST";
+            break;
+        case WIN:
+            result = "WIN";
+            break;
+        default:
+            result = "UNKNOWN";
+            break;
+    }
+    return result;
+
+}
+
