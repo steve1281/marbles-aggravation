@@ -1,3 +1,5 @@
+var poll_rate = 1000;
+
 function xhrSuccess() { 
     this.callback.apply(this, this.arguments); 
 }
@@ -19,18 +21,35 @@ function get_board()
 {
     get("/board", loadboard);
     if (game_state == WAITING) {
-        setTimeout(get_board, 5000);
+        setTimeout(get_board, poll_rate);
     }
 }
 function get_player()
 {
     get("/player", setplayer);
     if (game_state == WAITING) {
-        setTimeout(get_player, 5000);
+        setTimeout(get_player, poll_rate);
     }
 }
-function put_next_player()
+
+function put(url, message)
 {
+    var xhr = new XMLHttpRequest();
+    xhr.open('PUT', url);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            var userInfo = JSON.parse(xhr.responseText);
+        }
+    };
+    xhr.send(JSON.stringify(message));
+}
+
+
+function put_next_player(next_player)
+{
+    //var next_player = { "current_player": current_player, "player_name": "", "last_roll":last_roll };
+    put("/player", next_player);
     // put to server needs to be done
     // and then fetch the next player
     if (game_state == WAITING) {

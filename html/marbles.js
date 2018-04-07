@@ -1,6 +1,7 @@
 // hook into the canvas
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
+
 //game constants
 
 //position of the die
@@ -27,7 +28,7 @@ var BLUE = 3;
 var YELLOW = 4;
 var colorToString = ["WHITE", "RED", "GREEN", "BLUE", "YELLOW"];
 
-var my_player_id = RED; // this needs to be set by a call to the back end.
+var my_player_id = parseInt(getParameterByName("player")); // RED; // this needs to be set by a call to the back end.
 
 
 // this is the board_grid. 
@@ -293,6 +294,12 @@ function isMyMarble(col, row )
     return result;
 }
 
+function updatePlayerInfo()
+{
+    var next_player = { "current_player": current_player, "player_name": "", "last_roll":last_roll };
+    put_next_player(next_player);
+}
+
 // handle "divot" selection - could be marble or divot.
 function handleDivotSelection(pos)
 {
@@ -321,7 +328,9 @@ function handleDivotSelection(pos)
                       game_state = ROLLDIE;
                   } else {
                       game_state = WAITING;
-                      put_next_player();
+                      current_player ++;
+                      if (current_player >4) current_player=1;
+                      updatePlayerInfo();
                   }
                   put_board();
               } else {
@@ -342,6 +351,7 @@ function handleRollDie(pos)
         if (pos.y > die_offsety-2 && pos.y < die_offsety + 24) {
             last_roll=Math.floor(6*Math.random())+1; 
             game_state = PICKMARBLE;
+            updatePlayerInfo();
         }
     }
 }
