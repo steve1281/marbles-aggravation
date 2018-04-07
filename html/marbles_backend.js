@@ -19,7 +19,8 @@ function get(url, callback){
 }
 function get_board()
 {
-    get("/board", loadboard);
+    console.log("request board...");
+    get("/simpleboard", loadboard);
     if (game_state == WAITING) {
         setTimeout(get_board, poll_rate);
     }
@@ -56,11 +57,12 @@ function put_next_player(next_player)
         setTimeout(get_player, 5000);
     }
 }
-function put_board()
+function put_board(board)
 {
     // need put the changes we made to the board
+    put("/simpleboard", board);
     if (game_state == WAITING) {
-        setTimeout(get_player, 5000);
+        setTimeout(get_board, 5000);
     }
 }
 

@@ -40,6 +40,7 @@ var my_player_id = parseInt(getParameterByName("player")); // RED; // this needs
 // - 40,41,42,43 - player four marbles
 // 
 var board_grid = []
+/*
 board_grid[0] = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 board_grid[1] = [ 0, 20, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 30, 0];
 board_grid[2] = [ 0, 0, 21, 0, 0, 0, 1, 1, 1, 0, 0, 0, 31, 0, 0];
@@ -55,6 +56,7 @@ board_grid[11] = [ 0, 0, 0, 11, 0, 0, 1, 1, 1, 0, 0, 41, 0, 0, 0];
 board_grid[12] = [ 0, 0, 12, 0, 0, 0, 1, 1, 1, 0, 0, 0, 42, 0, 0];
 board_grid[13] = [ 0, 13, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 43, 0];
 board_grid[14] = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+*/
 
 // draw a board
 function drawBoard() {
@@ -178,10 +180,10 @@ function clearScreen()
 // -- load board
 function loadboard()
 {
-    if (game_state != WAITING) {
-        return;
-    }
     console.log(this.responseText);
+    myObj = JSON.parse(this.responseText);
+    board_grid = myObj.board_grid;
+
 }
 
 // -- set player, called once json data arrives.
@@ -305,7 +307,7 @@ function handleDivotSelection(pos)
                       if (current_player >4) current_player=1;
                       updatePlayerInfo();
                   }
-                  put_board();
+                  put_board({ "board_grid": board_grid});
               } else {
                   // invalid desistination, switch gamestate to PICKMARBLE
                   board_grid[picked_marble.col][picked_marble.row]= board_grid[picked_marble.col][picked_marble.row] / 100; 
@@ -353,8 +355,10 @@ function handleRollDie(pos)
             if (checkHooseGowLock()) {
                 game_state = WAITING;
                 current_player++; if (current_player > 4) {current_player = 1;}
+                get_board();
             } else {           
                 game_state = PICKMARBLE;
+
             }
             updatePlayerInfo();
         }
