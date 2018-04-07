@@ -12,12 +12,14 @@ public class ModelManager {
 
     private  GameDefaults gameDefaults = null;
     private  GameBoard gameBoard = null;
+    private  SimpleGameBoard simpleGameBoard = null;
     private  CurrentPlayer currentPlayer = null;
 
     protected ModelManager(){
         initialGameDefaults();
         initialCurrentPlayer();
         initialGameBoard();
+        initialSimpleGameBoard();
     }
 
     public static ModelManager getInstance()
@@ -26,6 +28,17 @@ public class ModelManager {
             instance = new ModelManager();
         }
         return instance;
+    }
+
+    private void initialSimpleGameBoard()
+    {
+        ObjectMapper objectMapper = new ObjectMapper();
+        File file = new File(Constants.JSON_FOLDER+"simple_game_board.json");
+        try {
+            setSimpleGameBoard(objectMapper.readValue(file, SimpleGameBoard.class));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initialGameBoard()
@@ -86,4 +99,11 @@ public class ModelManager {
     }
 
 
+    public SimpleGameBoard getSimpleGameBoard() {
+        return simpleGameBoard;
+    }
+
+    public void setSimpleGameBoard(SimpleGameBoard simpleGameBoard) {
+        this.simpleGameBoard = simpleGameBoard;
+    }
 }
