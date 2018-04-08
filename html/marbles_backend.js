@@ -17,12 +17,14 @@ function get(url, callback){
     xhr.open("GET", url, true);
     xhr.send(null);
 }
-function get_board()
+function get_board(playerid)
 {
-    console.log("request board...");
-    get("/simpleboard", loadboard);
+    url ="/simpleboard?player="+playerid;
+ 
+    console.log("request board..."+url);
+    get(url, loadboard);
     if (game_state == WAITING) {
-        setTimeout(get_board, poll_rate);
+        setTimeout(get_board.bind(null,playerid), poll_rate);
     }
 }
 function get_player()
@@ -62,7 +64,7 @@ function put_board(board)
     // need put the changes we made to the board
     put("/simpleboard", board);
     if (game_state == WAITING) {
-        setTimeout(get_board, 5000);
+        setTimeout(get_board.bind(null,board.player), poll_rate);
     }
 }
 

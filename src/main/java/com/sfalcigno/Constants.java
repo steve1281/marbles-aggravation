@@ -14,6 +14,7 @@ public final class Constants {
     public static final String JSON_FOLDER;
     public static final Integer PORT;
     public static final String HTML_ROOT;
+    public static final Boolean DEBUG=false;
 
     static {
         try{

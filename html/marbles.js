@@ -164,10 +164,8 @@ function clearScreen()
 // -- load board
 function loadboard()
 {
-    console.log(this.responseText);
     myObj = JSON.parse(this.responseText);
     board_grid = myObj.board_grid;
-
 }
 
 // -- set player, called once json data arrives.
@@ -176,7 +174,6 @@ function setplayer()
     if (game_state != WAITING) {
         return;
     }
-
     myObj = JSON.parse(this.responseText);
 
     current_player = myObj.current_player;
@@ -193,8 +190,9 @@ function setplayer()
 function drawText()
 {
     ctx.font = "18px Arial";
-    ctx.fillStyle = "white"; //"#34282c";
+    ctx.fillStyle = colorToString[my_player_id]; //"white"; //"#34282c";
     ctx.fillText("My Colour: " + colorToString[my_player_id] , 25, 20);
+    ctx.fillStyle = colorToString[current_player]; //"white"; //"#34282c";
     ctx.fillText("Current Colour: " + colorToString[current_player], 225, 20);
     ctx.fillStyle = "white"; //#f0f0f0";
     ctx.fillText(" " + game_state_toString(), canvas.width-185, 20);
@@ -205,14 +203,8 @@ function drawWood()
     var blueprint_background = new Image();
     blueprint_background.src = 'wood.jpg'; 
     ctx.drawImage(blueprint_background,0,0);
-/*
-    blueprint_background.onload = function(){
-        var pattern = context.createPattern(this, "repeat");
-        context.fillStyle = pattern;
-        context.fill();
-    };
-*/
 }
+
 // main draw loop
 function draw() {
     // request future draw call.
@@ -238,7 +230,7 @@ var startTime=last;
 draw();
 
 // call get board (must be called at least once)
-get_board();
+get_board(my_player_id);
 // call get player -- modify this; we should register ourselves, and that should call this.
 get_player();
 var picked_marble={col:0,row:0,marble:0};
@@ -306,7 +298,7 @@ function handleDivotSelection(pos)
                       if (current_player >4) current_player=1;
                       updatePlayerInfo();
                   }
-                  put_board({ "board_grid": board_grid});
+                  put_board({ "board_grid": board_grid, "player":my_player_id});
               } else {
                   // invalid desistination, switch gamestate to PICKMARBLE
                   board_grid[picked_marble.col][picked_marble.row]= board_grid[picked_marble.col][picked_marble.row] / 100; 
@@ -320,28 +312,15 @@ function handleDivotSelection(pos)
 
 function checkHooseGowLock()
 {
-    var full = false;
-    switch (my_player_id) {
-        case GREEN:
-            if (board_grid[1][1]+board_grid[2][2]+board_grid[3][3]+board_grid[4][4] > 20*4) { full=true; }
-            break;
-        case BLUE:
-            if (board_grid[1][13]+board_grid[2][12]+board_grid[3][11]+board_grid[4][10] > 30*4) { full=true; }
-            break;
-        case YELLOW:
-            if (board_grid[13][13]+board_grid[12][12]+board_grid[11][11]+board_grid[10][10] > 40*4) { full=true; }
-            break;
-        case RED:
-            if (board_grid[13][1]+board_grid[12][2]+board_grid[11][3]+board_grid[10][4] > 10*4) { full=true; }
-            break;
-        default:
-            break;
+     if (   board_grid[1][13]>1 
+         && board_grid[2][12]>1 
+         && board_grid[3][11]>1 
+         && board_grid[4][10] 
+         && last_roll !=1 
+         && last_roll !=6 ) { 
+         return true; 
      }
-     if (full && last_roll!=1 && last_roll!=6) {
-         return true;
-     } else {
-         return false;
-     }
+     return false;
 }
 
 // handle die roll.
@@ -354,7 +333,7 @@ function handleRollDie(pos)
             if (checkHooseGowLock()) {
                 game_state = WAITING;
                 current_player++; if (current_player > 4) {current_player = 1;}
-                get_board();
+                get_board(my_player_id);
             } else {           
                 game_state = PICKMARBLE;
 
