@@ -67,4 +67,9 @@ function put_board(board)
         setTimeout(get_board.bind(null,board.player), poll_rate);
     }
 }
+function get_admin_initgame()
+{
+    put("/admin/initgame");
+}
+
 

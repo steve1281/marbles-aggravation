@@ -30,6 +30,14 @@ public class ModelManager {
         return instance;
     }
 
+    public void Init()
+    {
+        initialGameDefaults();
+        initialCurrentPlayer();
+        initialGameBoard();
+        initialSimpleGameBoard();
+    }
+
     private void initialSimpleGameBoard()
     {
         ObjectMapper objectMapper = new ObjectMapper();
