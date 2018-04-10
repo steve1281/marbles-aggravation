@@ -140,8 +140,8 @@ function handleDivotSelection(pos)
               }
           } else { // PICKDEST
               // do some work (eg. is it a valid dest (are you jumping your own marble, is it within last_roll places, etc etc)
-              if (board_grid[divot_col][divot_row] == 1) { // picked an empty divot (what if killing someone? or jumping self!
-                  // assume we are happy for now. 
+              //if (board_grid[divot_col][divot_row] == 1) { // picked an empty divot (what if killing someone? or jumping self!
+              if (check(picked_marble, {"col":divot_col, "row":divot_row, "marble":board_grid[divot_col][divot_row] },last_roll)) {
                   board_grid[divot_col][divot_row] = picked_marble.marble;
                   board_grid[picked_marble.col][picked_marble.row] = 1;
                   if (last_roll == 6 || last_roll == 1) { // and the roll was used...
@@ -172,7 +172,7 @@ function handleRollDie(pos)
         if (pos.y > die_offsety-2 && pos.y < die_offsety + 24) {
             last_roll=Math.floor(6*Math.random())+1; 
             // can my_player_id use this roll?
-            if (checkHooseGowLock()) {
+            if (ruleHooseGowLock()) {
                 game_state = WAITING;
                 current_player++; if (current_player > 4) {current_player = 1;}
                 get_board(my_player_id);
