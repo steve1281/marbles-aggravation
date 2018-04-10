@@ -31,129 +31,8 @@ var colorToString = ["WHITE", "RED", "GREEN", "BLUE", "YELLOW"];
 var my_player_id = parseInt(getParameterByName("player")); // RED; // this needs to be set by a call to the back end.
 
 
-// this is the board_grid. 
-// - a zero means no divot
-// - 1 means empty divot
-// - 10,11,12,13 - player one marbles
-// - 20,21,22,23 - player two marbles
-// - 30,31,32,33 - player three marbles
-// - 40,41,42,43 - player four marbles
-// 
 var board_grid = []
 
-// draw a board
-function drawBoard() {
-    var marked = 0;
-    for (r=0; r<15; r++) {
-        for (c=0;c<15; c++) {
-            divot = board_grid[c][r];
-            if (divot > 99) { // marked 
-                divot = divot / 100;
-                marked = 1;
-            }
-            if (divot>0) {
-                ctx.beginPath();
-                switch (divot) { // select a player color if there is a marble in place.
-                    case 10:
-                    case 11:
-                    case 12:
-                    case 13: 
-                        ctx.fillStyle = "red";
-                        break;
-                    case 20:
-                    case 21:
-                    case 22:
-                    case 23: 
-                        ctx.fillStyle = "green";
-                        break;
-                    case 30:
-                    case 31:
-                    case 32:
-                    case 33: 
-                        ctx.fillStyle = "blue";
-                        break;
-                    case 40:
-                    case 41:
-                    case 42:
-                    case 43: 
-                        ctx.fillStyle = "yellow";
-                        break;
-                    default: // or a default blank divot color.
-                        ctx.fillStyle = "#F5F5F5";
-                }
-                if (marked) {
-                    ctx.fillStyle = "pink";
-                    marked = 0;
-                }
-                ctx.arc(30*c+30,30*r+30,10,0,Math.PI*2);
-                ctx.fill();
-                ctx.stroke();
-                ctx.closePath();
-            }
-        }
-    }
-    ctx.closePath();
-}
-
-// draw a die pip
-function drawPip(x,y)
-{
-    ctx.beginPath();
-    ctx.fillStyle="black";
-    ctx.arc(die_offsetx + x, die_offsety + y, 2, 0, Math.PI*2);
-    ctx.fill();
-    ctx.stroke();
-    ctx.closePath();
-}
-
-// draw a die
-function drawDie(rollValue) 
-{
-    ctx.beginPath();
-    ctx.fillStyle="white";
-    ctx.rect(die_offsetx-2, die_offsety-2, 24,24);
-    ctx.stroke();
-    ctx.fill();
-    ctx.closePath();
-
-    switch(rollValue) {
-    case 1:
-        drawPip(10,10);
-        break;
-    case 2:
-        drawPip(2,2);
-        drawPip(18,18);
-        break;
-    case 3:
-        drawPip(2,2);
-        drawPip(10,10);
-        drawPip(18,18);
-        break;
-    case 4:
-        drawPip(2,2);
-        drawPip(2,18);
-        drawPip(18,2);
-        drawPip(18,18);
-        break;
-    case 5:
-        drawPip(2,2);
-        drawPip(2,18);
-        drawPip(10,10);
-        drawPip(18,2);
-        drawPip(18,18);
-        break;
-    case 6:
-        drawPip(2,2);
-        drawPip(2,18);
-        drawPip(10,2);
-        drawPip(10,18);
-        drawPip(18,2);
-        drawPip(18,18);
-        break;
-    default:
-        break; // leave blank.
-    }
-}
 
 // clear screen 
 function clearScreen()
@@ -215,7 +94,7 @@ function draw() {
         last = now - (elapsed % fpsInterval);
         clearScreen();
         drawWood();
-        drawBoard();
+        drawBoard(board_grid);
         drawText();
         drawDie(last_roll);
     }
@@ -234,31 +113,6 @@ get_board(my_player_id);
 // call get player -- modify this; we should register ourselves, and that should call this.
 get_player();
 var picked_marble={col:0,row:0,marble:0};
-
-function isMyMarble(col, row )
-{
-    var result = false;
-    var marbleAt = board_grid[col][row];
-
-    switch (my_player_id) {
-        case RED:
-            if (marbleAt == 10 || marbleAt == 11 || marbleAt == 12 || marbleAt == 13) result = true;
-            break;
-        case GREEN:
-            if (marbleAt == 20 || marbleAt == 21 || marbleAt == 22 || marbleAt == 23) result = true;
-            break;
-        case BLUE:
-            if (marbleAt == 30 || marbleAt == 31 || marbleAt == 32 || marbleAt == 33) result = true;
-            break;
-        case YELLOW:
-            if (marbleAt == 40 || marbleAt == 41 || marbleAt == 42 || marbleAt == 43) result = true;
-            break;
-        default:
-            break;
-     }
- 
-    return result;
-}
 
 function updatePlayerInfo()
 {
@@ -310,18 +164,6 @@ function handleDivotSelection(pos)
       }
 }
 
-function checkHooseGowLock()
-{
-     if (   board_grid[1][13]>1 
-         && board_grid[2][12]>1 
-         && board_grid[3][11]>1 
-         && board_grid[4][10] 
-         && last_roll !=1 
-         && last_roll !=6 ) { 
-         return true; 
-     }
-     return false;
-}
 
 // handle die roll.
 function handleRollDie(pos) 
