@@ -78,7 +78,7 @@ function ruleEscapeHooseGow(start_pos, end_pos, last_roll)
 }
 function ruleEmptyDivot(end_pos) 
 {
-    return board_grid[end_pos.col][end_pos.row] == 1;
+    return board_grid[end_pos.col][end_pos.row] != 1;
 }
 
 function ruleIntoTheHooseGow(end_pos)
@@ -99,14 +99,35 @@ function ruleIntoTheHooseGow(end_pos)
     if (end_pos.col == 13 && end_pos.row==3) return true;
     if (end_pos.col == 13 && end_pos.row==4) return true;
 
-    if (end_pos.col == 13 && end_pos==13) return true;
-    if (end_pos.col == 12 && end_pos==12) return true;
-    if (end_pos.col == 11 && end_pos==11) return true;
-    if (end_pos.col == 10 && end_pos==10) return true;
+    if (end_pos.col == 13 && end_pos.row==13) return true;
+    if (end_pos.col == 12 && end_pos.row==12) return true;
+    if (end_pos.col == 11 && end_pos.row==11) return true;
+    if (end_pos.col == 10 && end_pos.row==10) return true;
 
     return false;
 }
 
+function ruleSomeoneElsesHome(end_pos)
+{
+    // never allowed in another players home
+    if (end_pos.col == 2 && end_pos.row==7) return true;
+    if (end_pos.col == 3 && end_pos.row==7) return true;
+    if (end_pos.col == 4 && end_pos.row==7) return true;
+    if (end_pos.col == 5 && end_pos.row==7) return true;
+    
+    if (end_pos.col == 7 && end_pos.row==2) return true;
+    if (end_pos.col == 7 && end_pos.row==3) return true;
+    if (end_pos.col == 7 && end_pos.row==4) return true;
+    if (end_pos.col == 7 && end_pos.row==5) return true;
+
+    if (end_pos.col == 9  && end_pos.row==7) return true;
+    if (end_pos.col == 10 && end_pos.row==7) return true;
+    if (end_pos.col == 11 && end_pos.row==7) return true;
+    if (end_pos.col == 12 && end_pos.row==7) return true;
+
+    return false;
+
+}
 function check(start_pos, end_pos, last_roll)
 {
 
@@ -114,8 +135,10 @@ function check(start_pos, end_pos, last_roll)
 
     if (ruleIntoTheHooseGow(end_pos)) return false;
 
-    if (ruleEmptyDivot(end_pos)) return true; 
+    if (ruleSomeoneElsesHome(end_pos)) return false;
 
-    return false; // for now.    
+    if (ruleEmptyDivot(end_pos)) return false; 
+
+    return true; // for now.    
 }
 
