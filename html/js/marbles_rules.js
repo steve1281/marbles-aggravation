@@ -128,6 +128,14 @@ function ruleSomeoneElsesHome(end_pos)
     return false;
 
 }
+function ruleEscapeTheHole(start_pos,end_pos,last_roll)
+{
+    if (start_pos.col != 7 && start_pos.row != 7) return false; // not in the hole, can't violate it.
+    if (last_roll !=1 ) return true; // only a 1 gets you out of the hole, sorry
+    if (end_pos.col != 8 && end_pos.row != 8) return true; // must go into 8,8
+    return false;
+}
+
 function check(start_pos, end_pos, last_roll)
 {
 
@@ -137,7 +145,13 @@ function check(start_pos, end_pos, last_roll)
 
     if (ruleSomeoneElsesHome(end_pos)) return false;
 
+    // comment this out for now; need to detect no move if no marble in play before I can light this up.
+    // otherwise, people will have a marble in the hole, and the game will detect this.
+    // (need to think about this one)
+    //if (ruleEscapeTheHole(start_pos,end_pos,last_roll)) return false;
+
     if (ruleEmptyDivot(end_pos)) return false; 
+
 
     return true; // for now.    
 }
