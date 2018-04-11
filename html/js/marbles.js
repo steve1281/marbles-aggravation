@@ -80,7 +80,7 @@ function drawText()
 function drawWood()
 {
     var blueprint_background = new Image();
-    blueprint_background.src = '../images/wood.jpg'; 
+    blueprint_background.src = 'images/wood.jpg'; 
     ctx.drawImage(blueprint_background,0,0);
 }
 

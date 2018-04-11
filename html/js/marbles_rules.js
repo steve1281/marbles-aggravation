@@ -59,9 +59,9 @@ function ruleEscapeHooseGow(start_pos, end_pos, last_roll)
      ) {
         // ok, they clicked a marble in the hoosegow. 
         // so, they better also clicked the exit
-        if (end_pos.col == 6 && end_pos.row == 14) { 
+        if (end_pos.col == 6 && end_pos.row == 13) { 
             //cool, so did they also roll a 1 or 6
-            if (end_pos.col ==6 && end_pos.row == 14) { 
+            if (last_roll ==6 || last_roll == 1) { 
                 result = false; // they DID NOT break rule
             } else {
                 result = true; // broke rule - left hoosegow without a 6 or 1
@@ -81,13 +81,40 @@ function ruleEmptyDivot(end_pos)
     return board_grid[end_pos.col][end_pos.row] == 1;
 }
 
+function ruleIntoTheHooseGow(end_pos)
+{
+    // you can't move into a hoosgow voluntarily
+    if (end_pos.col == 1 && end_pos.row==1) return true;
+    if (end_pos.col == 2 && end_pos.row==2) return true;
+    if (end_pos.col == 3 && end_pos.row==3) return true;
+    if (end_pos.col == 4 && end_pos.row==4) return true;
+
+    if (end_pos.col == 1 && end_pos.row==13) return true;
+    if (end_pos.col == 2 && end_pos.row==12) return true;
+    if (end_pos.col == 3 && end_pos.row==11) return true;
+    if (end_pos.col == 4 && end_pos.row==10) return true;
+
+    if (end_pos.col == 13 && end_pos.row==1) return true;
+    if (end_pos.col == 13 && end_pos.row==2) return true;
+    if (end_pos.col == 13 && end_pos.row==3) return true;
+    if (end_pos.col == 13 && end_pos.row==4) return true;
+
+    if (end_pos.col == 13 && end_pos==13) return true;
+    if (end_pos.col == 12 && end_pos==12) return true;
+    if (end_pos.col == 11 && end_pos==11) return true;
+    if (end_pos.col == 10 && end_pos==10) return true;
+
+    return false;
+}
+
 function check(start_pos, end_pos, last_roll)
 {
-    if (ruleEmptyDivot(end_pos)) return true; // todo: need to fix this
-
-    if (ruleHooseGowLock(start_pos, end_pos, last_roll)) return false; 
 
     if (ruleEscapeHooseGow(start_pos, end_pos, last_roll)) return false; 
+
+    if (ruleIntoTheHooseGow(end_pos)) return false;
+
+    if (ruleEmptyDivot(end_pos)) return true; 
 
     return false; // for now.    
 }
