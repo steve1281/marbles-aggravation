@@ -26,3 +26,8 @@ curl -X POST http://localhost:9998/board -H Content-Type:application/json -d @js
 * http://localhost:9998/game/marbles.html
 * http://localhost:9998/game/breakout.html
 
+## Testing game
+* launch http://localhost:9998/game/index.html
+* launch all four players
+* also, the breakout game is still there :-)
+
