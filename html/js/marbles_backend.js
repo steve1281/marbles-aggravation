@@ -21,7 +21,6 @@ function get_board(playerid)
 {
     url ="/simpleboard?player="+playerid;
  
-    console.log("request board..."+url);
     get(url, loadboard);
     if (game_state == WAITING) {
         setTimeout(get_board.bind(null,playerid), poll_rate);
