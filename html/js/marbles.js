@@ -30,7 +30,7 @@ var colorToString = ["WHITE", "RED", "GREEN", "BLUE", "YELLOW"];
 
 var my_player_id = parseInt(getParameterByName("player")); // RED; // this needs to be set by a call to the back end.
 
-
+var choices=[];
 var board_grid = []
 
 
@@ -119,6 +119,16 @@ function updatePlayerInfo()
     var next_player = { "current_player": current_player, "player_name": "", "last_roll":last_roll };
     put_next_player(next_player);
 }
+function destInChoices(choices,picked_marble, dest)
+{
+    p = findPos(dest);
+    var marble_id = picked_marble.marble;
+    var idx = marble_id - (10*my_player_id);
+    for (var i=0;i<choices[idx].length;i++) {
+        if (choices[idx][i] == p) return true;
+    }
+    return false;
+}
 
 // handle "divot" selection - could be marble or divot.
 function handleDivotSelection(pos)
@@ -141,7 +151,8 @@ function handleDivotSelection(pos)
           } else { // PICKDEST
               // do some work (eg. is it a valid dest (are you jumping your own marble, is it within last_roll places, etc etc)
               //if (board_grid[divot_col][divot_row] == 1) { // picked an empty divot (what if killing someone? or jumping self!
-              if (check(picked_marble, {"col":divot_col, "row":divot_row, "marble":board_grid[divot_col][divot_row] },last_roll)) {
+              if (destInChoices(choices, picked_marble, {"col":divot_col, "row":divot_row, "marble":board_grid[divot_col][divot_row] })) {
+              //if (check(picked_marble, {"col":divot_col, "row":divot_row, "marble":board_grid[divot_col][divot_row] },last_roll)) {
                   board_grid[divot_col][divot_row] = picked_marble.marble;
                   board_grid[picked_marble.col][picked_marble.row] = 1;
                   if (last_roll == 6 || last_roll == 1) { // and the roll was used...
@@ -172,6 +183,8 @@ function handleRollDie(pos)
         if (pos.y > die_offsety-2 && pos.y < die_offsety + 24) {
             last_roll=Math.floor(6*Math.random())+1; 
             // can my_player_id use this roll?
+            choices = validDestinations();
+            // this happens so much, I will make an exception here.
             if (ruleHooseGowLock()) {
                 game_state = WAITING;
                 current_player++; if (current_player > 4) {current_player = 1;}

@@ -87,7 +87,7 @@ function findPos(pos)
         x = 52; // board center
     } else {
         for (var i=0; i< the_path.length; i++) {
-            console.log("col: "+the_path[i].col + ", row:"+the_path[i].row);
+            //console.log("col: "+the_path[i].col + ", row:"+the_path[i].row);
             if ( (the_path[i].col == pos.col) && (the_path[i].row == pos.row) ) {
                 x = i;
                 break;
