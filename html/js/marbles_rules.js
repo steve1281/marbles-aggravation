@@ -87,6 +87,7 @@ function findPos(pos)
         x = 52; // board center
     } else {
         for (var i=0; i< the_path.length; i++) {
+            console.log("col: "+the_path[i].col + ", row:"+the_path[i].row);
             if ( (the_path[i].col == pos.col) && (the_path[i].row == pos.row) ) {
                 x = i;
                 break;
@@ -98,17 +99,33 @@ function findPos(pos)
 
 function getPath(start_pos, end_pos)
 {
+    var subpath =[];
     var sindex = findPos(start_pos);
     var eindex = findPos(end_pos);
-    if (eindex > sindex) { // user is moving backwards.
+    console.log("sindex: "+sindex+","+ "eindex: "+eindex);
+
+    if (sindex > eindex) { // user is moving backwards.
+        return subpath;
     }
     if (sindex == 52) { // special case, leaving hole
+        
+    
     }
     if (eindex == 52) { // special case, entering hole
-    }
-    var subpath = the_path.slice(sindex, eindex);
 
-    return subpath;
+    }
+    
+    console.log("splice: " +JSON.stringify(the_path.slice(sindex,eindex)));
+    return the_path.slice(sindex, eindex);
+
+}
+function inHooseGow(pos)
+{
+    if ( pos.col == 1 && pos.row == 13) return true;
+    if ( pos.col == 2 && pos.row == 12) return true;
+    if ( pos.col == 3 && pos.row == 11) return true;
+    if ( pos.col == 4 && pos.row == 10) return true;
+    return false;
 }
 
 // ----- rules ----
@@ -137,13 +154,7 @@ function ruleEscapeHooseGow(start_pos, end_pos, last_roll)
     // the dest must be {6,14} 
     var result = false;
 
-    if ( 
-        (start_pos.col == 1 && start_pos.row ==13)||     
-        (start_pos.col == 2 && start_pos.row ==12)||     
-        (start_pos.col == 3 && start_pos.row ==11)||     
-        (start_pos.col == 4 && start_pos.row ==10)
-     ) {
-        // ok, they clicked a marble in the hoosegow. 
+    if (inHooseGow(start_pos) ) { // ok, they clicked a marble in the hoosegow. 
         // so, they better also clicked the exit
         if (end_pos.col == 6 && end_pos.row == 13) { 
             //cool, so did they also roll a 1 or 6
@@ -222,6 +233,18 @@ function ruleEscapeTheHole(start_pos,end_pos,last_roll)
     return false;
 }
 
+function ruleEnoughDivots(start_pos, end_pos, last_roll)
+{
+    if (inHooseGow(start_pos)) return false;  // doesn't apply
+
+    var subpath = getPath(start_pos, end_pos);
+    if (subpath.length != last_roll ) {
+       return true; // rule applies 
+    }
+    return false;
+
+}
+
 function check(start_pos, end_pos, last_roll)
 {
 
@@ -238,10 +261,7 @@ function check(start_pos, end_pos, last_roll)
 
     if (ruleEmptyDivot(end_pos)) return false; 
 
-    var subpath = getPath(start_pos, end_pos);
-    for (var i=0; i< subpath.length; i++) {
-        console.log(" {"+ subpath[i].col + ", " + subpath[i].row + "},");
-    }
+    if (ruleEnoughDivots(start_pos, end_pos, last_roll)) return false;
 
     return true; // for now.    
 }
