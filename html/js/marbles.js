@@ -175,6 +175,13 @@ function handleDivotSelection(pos)
       }
 }
 
+function anyChoices(choices)
+{
+   for (var i=0;i<choices.length;i++) {
+       if (choices[i].length > 0) return true;
+   }
+   return false;
+}
 
 // handle die roll.
 function handleRollDie(pos) 
@@ -185,7 +192,7 @@ function handleRollDie(pos)
             // can my_player_id use this roll?
             choices = validDestinations();
             // this happens so much, I will make an exception here.
-            if (ruleHooseGowLock()) {
+            if (!anyChoices(choices)) { //ruleHooseGowLock()) {
                 game_state = WAITING;
                 current_player++; if (current_player > 4) {current_player = 1;}
                 get_board(my_player_id);
