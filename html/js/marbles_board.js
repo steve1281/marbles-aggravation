@@ -35,7 +35,7 @@ function drawBoard(board_grid) {
                     case 31:
                     case 32:
                     case 33: 
-                        ctx.fillStyle = "blue";
+                        ctx.fillStyle = "lightblue";
                         break;
                     case 40:
                     case 41:
@@ -50,10 +50,31 @@ function drawBoard(board_grid) {
                     ctx.fillStyle = "pink";
                     marked = 0;
                 }
-                ctx.arc(30*c+30,30*r+30,10,0,Math.PI*2);
+                if (divot > 1) {
+                    ctx.arc(30*c+30,30*r+30,14,0,Math.PI*2);
+                } else {
+                    ctx.arc(30*c+30,30*r+30,10,0,Math.PI*2);
+                }
                 ctx.fill();
                 ctx.stroke();
                 ctx.closePath();
+                if (divot > 1) { 
+                    ctx.font = "10px Arial";
+                    ctx.fillStyle = "black";
+                    ctx.fillText(""+(divot - Math.floor(divot/10)*10), 30*c+30-3 , 30*r+30+3 );
+                }
+                if (divot == 1) { 
+                    ctx.font = "10px Arial";
+                    ctx.fillStyle = "black";
+                    p = findPos({"row":r,"col":c});
+                    if (p>=0 && p<10) {
+                        ctx.fillText(""+findPos({"row":r,"col":c}), 30*c+30-3 , 30*r+30+3 );
+                    }
+
+                    if (p>=10) {
+                        ctx.fillText(""+findPos({"row":r,"col":c}), 30*c+30-5 , 30*r+30+3 );
+                    }
+                }
             }
         }
     }

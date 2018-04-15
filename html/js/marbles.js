@@ -75,6 +75,8 @@ function drawText()
     ctx.fillText("Current Colour: " + colorToString[current_player], 225, 20);
     ctx.fillStyle = "white"; //#f0f0f0";
     ctx.fillText(" " + game_state_toString(), canvas.width-185, 20);
+    ctx.fillStyle = "white"; //#f0f0f0";
+    ctx.fillText(" " + JSON.stringify(choices),185,canvas.height-20);
 }
 
 function drawWood()
@@ -129,6 +131,58 @@ function destInChoices(choices,picked_marble, dest)
     }
     return false;
 }
+//
+// hoose gows coordinates
+// 3    2
+//  \  /
+//  /  \  
+// 0    1 
+var gows_str = '[ [{ "row":1,  "col":13}, {"row":2,  "col":12}, {"row":3, "col":13}, {"row":4,  "col":10}], [{ "row":13, "col":13}, {"row":12, "col":12}, {"row":11,"col":11}, {"row":10, "col":10}], [{ "row":13, "col":1 }, {"row":12, "col":2 }, {"row":11,"col":3 }, {"row":10, "col":4 }], [{ "row":1,  "col":1 }, {"row":2,  "col":2 }, {"row":3, "col":3 }, {"row":4,  "col":1 }] ]';
+var gows = JSON.parse(gows_str);
+
+function returnToHooseGow(marble_id) {
+    if (marble_id<=1) return;
+   
+    // select hoosgow to find
+    hoosegow = Math.floor(marble_id/10); // 1,2,3,4
+
+    // select orientation
+    var orientation = my_player_id; // basically, 1,2,3 or 4
+    // for now, brute force selection (todo: there must be a more clever way to do this)
+    if (orientation == 1) {
+        if (hoosegow == 4) gow = gows[3];//  40   30
+        if (hoosegow == 3) gow = gows[2];//    \ / 
+        if (hoosegow == 2) gow = gows[1];//    / \
+        if (hoosegow == 1) gow = gows[0];//  10   20
+    }
+    if (orientation == 2) {
+        if (hoosegow == 1) gow = gows[3];//  10   40
+        if (hoosegow == 4) gow = gows[2];//    \ / 
+        if (hoosegow == 3) gow = gows[1];//    / \
+        if (hoosegow == 2) gow = gows[0];//  20   30
+    }
+    if (orientation == 3) {
+        if (hoosegow == 2) gow = gows[3];//  20   10
+        if (hoosegow == 1) gow = gows[2];//    \ / 
+        if (hoosegow == 4) gow = gows[1];//    / \
+        if (hoosegow == 3) gow = gows[0];//  30   40
+    }
+    if (orientation == 4) {
+        if (hoosegow == 3) gow = gows[3];//  30   20
+        if (hoosegow == 2) gow = gows[2];//    \ / 
+        if (hoosegow == 1) gow = gows[1];//    / \
+        if (hoosegow == 4) gow = gows[0];//  40   10
+    }
+    
+    // scan the gow for an empty spot (guarneteed to be there)
+    for (var i=0; i<gow.length;i++) {
+        g = gow[i];
+        if (board_grid[g.col][g.row] == 1) {
+            board_grid[g.col][g.row]= marble_id;
+            break;
+        }
+    }
+}
 
 // handle "divot" selection - could be marble or divot.
 function handleDivotSelection(pos)
@@ -150,9 +204,9 @@ function handleDivotSelection(pos)
               }
           } else { // PICKDEST
               // do some work (eg. is it a valid dest (are you jumping your own marble, is it within last_roll places, etc etc)
-              //if (board_grid[divot_col][divot_row] == 1) { // picked an empty divot (what if killing someone? or jumping self!
               if (destInChoices(choices, picked_marble, {"col":divot_col, "row":divot_row, "marble":board_grid[divot_col][divot_row] })) {
-              //if (check(picked_marble, {"col":divot_col, "row":divot_row, "marble":board_grid[divot_col][divot_row] },last_roll)) {
+                  target = board_grid[divot_col][divot_row];
+                  returnToHooseGow(target);
                   board_grid[divot_col][divot_row] = picked_marble.marble;
                   board_grid[picked_marble.col][picked_marble.row] = 1;
                   if (last_roll == 6 || last_roll == 1) { // and the roll was used...
@@ -165,7 +219,7 @@ function handleDivotSelection(pos)
                   }
                   put_board({ "board_grid": board_grid, "player":my_player_id});
               } else {
-                  // invalid desistination, switch gamestate to PICKMARBLE
+                  // invalid destination, switch gamestate to PICKMARBLE
                   board_grid[picked_marble.col][picked_marble.row]= board_grid[picked_marble.col][picked_marble.row] / 100; 
                   picked_marble={col:0,row:0,marble:0};
                   game_state=PICKMARBLE;

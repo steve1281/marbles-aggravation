@@ -33,7 +33,7 @@ function inHole(p)
 function marbleAtPos(p)
 {
     if (p==52) { // special case, the hole
-        return board_grid[7][7].marble;
+        return board_grid[7][7];
     }
 
     // return the marble at postion p (1 - empty)
@@ -56,7 +56,7 @@ function notMyMarble(p)
 function walkTo(src,des) 
 {
     if (src ==52) return false;
-    if (des > 52) return false;
+    if (des >= 52) return false;
 
     var flag = true;
     // cannot jump your own marble
