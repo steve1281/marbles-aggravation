@@ -68,11 +68,11 @@ function drawBoard(board_grid) {
                     ctx.fillStyle = "black";
                     p = findPos({"row":r,"col":c});
                     if (p>=0 && p<10) {
-                        ctx.fillText(""+findPos({"row":r,"col":c}), 30*c+30-3 , 30*r+30+3 );
+                        ctx.fillText(""+p, 30*c+30-3 , 30*r+30+3 );
                     }
 
                     if (p>=10) {
-                        ctx.fillText(""+findPos({"row":r,"col":c}), 30*c+30-5 , 30*r+30+3 );
+                        ctx.fillText(""+p, 30*c+30-5 , 30*r+30+3 );
                     }
                 }
             }
