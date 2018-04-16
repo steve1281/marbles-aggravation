@@ -66,3 +66,28 @@ var contains = function(needle) {
     return indexOf.call(this, needle) > -1;
 };
 
+  function isMyMarble(col, row )
+  {
+      var result = false;
+      var marbleAt = board_grid[col][row];
+
+      switch (my_player_id) {
+          case RED:
+              if (contains.call([10,11,12,13], marbleAt)) result = true;
+              break;
+          case GREEN:
+              if (contains.call([20,21,22,23], marbleAt)) result = true;
+              break;
+          case BLUE:
+              if (contains.call([30,31,32,33], marbleAt)) result = true;
+              break;
+          case YELLOW:
+              if (contains.call([40,41,42,43], marbleAt)) result = true;
+              break;
+          default:
+              break;
+       }
+
+      return result;
+  }
+
