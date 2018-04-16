@@ -5,6 +5,7 @@ import com.sfalcigno.Constants;
 
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 public class ModelManager {
@@ -60,6 +61,26 @@ public class ModelManager {
         }
     }
 
+    public void loadGame(String filename)
+    {
+        ObjectMapper objectMapper = new ObjectMapper();
+        File file = new File(Constants.SAVE_GAME_FOLDER+filename );
+        try {
+            simpleGameBoard = objectMapper.readValue(file, SimpleGameBoard.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveGame(String filename)
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            mapper.writeValue(new File(Constants.SAVE_GAME_FOLDER+filename),simpleGameBoard);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private void initialCurrentPlayer()
     {

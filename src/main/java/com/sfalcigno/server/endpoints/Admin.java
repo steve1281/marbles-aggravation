@@ -16,4 +16,17 @@ public class Admin {
     public void put() {
         ModelManager.getInstance().Init();
     }
+
+    @POST
+    @Consumes( MediaType.APPLICATION_JSON)
+    @Path("/savegame")
+    public void post_save() {
+       ModelManager.getInstance().saveGame("testgame.json");
+    }
+    @POST
+    @Consumes( MediaType.APPLICATION_JSON)
+    @Path("/loadgame")
+    public void post_load() {
+        ModelManager.getInstance().loadGame("testgame.json");
+    }
 }

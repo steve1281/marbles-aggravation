@@ -15,6 +15,8 @@ public final class Constants {
     public static final Integer PORT;
     public static final String HTML_ROOT;
     public static final Boolean DEBUG=false;
+    public static final String SAVE_GAME_FOLDER;
+
 
     static {
         try{
@@ -32,5 +34,6 @@ public final class Constants {
         ROOT = prop.getProperty("ROOT");
         JSON_FOLDER = ROOT+"/json/";
         HTML_ROOT = ROOT+"/html";
+        SAVE_GAME_FOLDER = ROOT+"/json/";
     }
 }

@@ -71,6 +71,7 @@ function drawText()
     ctx.font = "18px Arial";
     ctx.fillStyle = colorToString[my_player_id]; //"white"; //"#34282c";
     ctx.fillText("My Colour: " + colorToString[my_player_id] , 25, 20);
+
     ctx.fillStyle = colorToString[current_player]; //"white"; //"#34282c";
     ctx.fillText("Current Colour: " + colorToString[current_player], 225, 20);
     ctx.fillStyle = "white"; //#f0f0f0";
@@ -144,10 +145,15 @@ function returnToHooseGow(marble_id) {
     if (marble_id<=1) return;
    
     // select hoosgow to find
-    hoosegow = Math.floor(marble_id/10); // 1,2,3,4
+    var hoosegow = Math.floor(marble_id/10); // 1,2,3,4
 
     // select orientation
     var orientation = my_player_id; // basically, 1,2,3 or 4
+
+    console.log("orientation: " + orientation);
+    console.log("hoosegow: " + hoosegow);
+    console.log("marble: " + marble_id);
+
     // for now, brute force selection (todo: there must be a more clever way to do this)
     if (orientation == 1) {
         if (hoosegow == 4) gow = gows[3];//  40   30
@@ -175,6 +181,8 @@ function returnToHooseGow(marble_id) {
     }
     
     // scan the gow for an empty spot (guarneteed to be there)
+    console.log(JSON.stringify(gow));
+    var g=[];
     for (var i=0; i<gow.length;i++) {
         g = gow[i];
         if (board_grid[g.col][g.row] == 1) {

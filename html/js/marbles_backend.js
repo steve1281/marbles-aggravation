@@ -34,6 +34,29 @@ function get_player()
     }
 }
 
+function post(url, message)
+{
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', url);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            var userInfo = JSON.parse(xhr.responseText);
+        }
+    };
+    xhr.send(JSON.stringify(message));
+}
+
+function post_load_game()
+{
+    post("/admin/loadgame", "");
+}
+
+function post_save_game()
+{
+    post("/admin/savegame", "");
+}
+
 function put(url, message)
 {
     var xhr = new XMLHttpRequest();
