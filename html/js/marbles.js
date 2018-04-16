@@ -138,7 +138,12 @@ function destInChoices(choices,picked_marble, dest)
 //  \  /
 //  /  \  
 // 0    1 
-var gows_str = '[ [{ "row":1,  "col":13}, {"row":2,  "col":12}, {"row":3, "col":13}, {"row":4,  "col":10}], [{ "row":13, "col":13}, {"row":12, "col":12}, {"row":11,"col":11}, {"row":10, "col":10}], [{ "row":13, "col":1 }, {"row":12, "col":2 }, {"row":11,"col":3 }, {"row":10, "col":4 }], [{ "row":1,  "col":1 }, {"row":2,  "col":2 }, {"row":3, "col":3 }, {"row":4,  "col":1 }] ]';
+var gows_str = `[ 
+    [{ "row":1,  "col":13}, {"row":2,  "col":12}, {"row":3, "col":13}, {"row":4,  "col":10}], 
+    [{ "row":13, "col":13}, {"row":12, "col":12}, {"row":11,"col":11}, {"row":10, "col":10}], 
+    [{ "row":13, "col":1 }, {"row":12, "col":2 }, {"row":11,"col":3 }, {"row":10, "col":4 }], 
+    [{ "row":1,  "col":1 }, {"row":2,  "col":2 }, {"row":3, "col":3 }, {"row":4,  "col":1 }] 
+]`;
 var gows = JSON.parse(gows_str);
 
 function returnToHooseGow(marble_id) {
