@@ -30,7 +30,12 @@ public final class Constants {
         } catch(Exception ex){
             ex.printStackTrace();
         }
-        PORT = Integer.parseInt(prop.getProperty("PORT"));
+        String temp= System.getProperty("server.port"); // added to support heroku
+        if (temp == null) {
+            PORT = Integer.parseInt(prop.getProperty("PORT"));
+        } else {
+            PORT = Integer.parseInt(temp);
+        }
         ROOT = prop.getProperty("ROOT");
         JSON_FOLDER = ROOT+"/json/";
         HTML_ROOT = ROOT+"/html";

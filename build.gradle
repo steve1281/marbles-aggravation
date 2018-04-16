@@ -16,6 +16,7 @@ task fatJar(type: Jar) {
         	'Main-Class': 'com.sfalcigno.Main'
     }
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    archiveName 'marbles-aggravation.jar'
     with jar
 }
 
