@@ -66,8 +66,8 @@ var contains = function(needle) {
     return indexOf.call(this, needle) > -1;
 };
 
-  function isMyMarble(col, row )
-  {
+function isMyMarble(col, row )
+{
       var result = false;
       var marbleAt = board_grid[col][row];
 
@@ -89,5 +89,5 @@ var contains = function(needle) {
        }
 
       return result;
-  }
+}
 
