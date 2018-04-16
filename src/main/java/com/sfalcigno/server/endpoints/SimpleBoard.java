@@ -4,14 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.sfalcigno.Constants;
-import com.sfalcigno.models.CurrentPlayer;
-import com.sfalcigno.models.GameBoard;
 import com.sfalcigno.models.ModelManager;
 import com.sfalcigno.models.SimpleGameBoard;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 @Path("simpleboard")
 public class SimpleBoard {

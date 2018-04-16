@@ -5,21 +5,18 @@ import com.sfalcigno.Constants;
 
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 public class ModelManager {
     private  static ModelManager instance = null;
 
-    private  GameDefaults gameDefaults = null;
-    private  GameBoard gameBoard = null;
     private  SimpleGameBoard simpleGameBoard = null;
     private  CurrentPlayer currentPlayer = null;
+    private  GameDefaults gameDefaults = null;
 
     protected ModelManager(){
         initialGameDefaults();
         initialCurrentPlayer();
-        initialGameBoard();
         initialSimpleGameBoard();
     }
 
@@ -35,7 +32,6 @@ public class ModelManager {
     {
         initialGameDefaults();
         initialCurrentPlayer();
-        initialGameBoard();
         initialSimpleGameBoard();
     }
 
@@ -45,17 +41,6 @@ public class ModelManager {
         File file = new File(Constants.JSON_FOLDER+"simple_game_board.json");
         try {
             setSimpleGameBoard(objectMapper.readValue(file, SimpleGameBoard.class));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void initialGameBoard()
-    {
-        ObjectMapper objectMapper = new ObjectMapper();
-        File file = new File(Constants.JSON_FOLDER+"game_board.json");
-        try {
-            gameBoard = objectMapper.readValue(file, GameBoard.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -104,13 +89,6 @@ public class ModelManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public GameBoard getGameBoard() {
-        return gameBoard;
-    }
-    public void setGameBoard(GameBoard gameBoard) {
-        this.gameBoard = gameBoard;
     }
 
     public GameDefaults getGameDefaults() {
