@@ -29,7 +29,8 @@ var YELLOW = 4;
 var colorToString = ["WHITE", "RED", "GREEN", "BLUE", "YELLOW"];
 
 var my_player_id = parseInt(getParameterByName("player")); // RED; // this needs to be set by a call to the back end.
-
+var enable_ai = parseInt(getParameterByName("enable_ai")); if (isNaN(enable_ai)) enable_ai=0;
+ 
 var choices=[];
 var board_grid = []
 
@@ -250,47 +251,64 @@ function anyChoices(choices)
    return false;
 }
 
+function rolled()
+{
+    last_roll=Math.floor(6*Math.random())+1; 
+    // can my_player_id use this roll?
+    choices = validDestinations();
+    // this happens so much, I will make an exception here.
+    if (!anyChoices(choices)) { //ruleHooseGowLock()) {
+        game_state = WAITING;
+        current_player++; if (current_player > 4) {current_player = 1;}
+        get_board(my_player_id);
+    } else {           
+        game_state = PICKMARBLE;
+    
+    }
+    updatePlayerInfo();
+}
+
 // handle die roll.
 function handleRollDie(pos) 
 {
     if (pos.x > die_offsetx-2 && pos.x < die_offsetx+24 ){
         if (pos.y > die_offsety-2 && pos.y < die_offsety + 24) {
-            last_roll=Math.floor(6*Math.random())+1; 
-            // can my_player_id use this roll?
-            choices = validDestinations();
-            // this happens so much, I will make an exception here.
-            if (!anyChoices(choices)) { //ruleHooseGowLock()) {
-                game_state = WAITING;
-                current_player++; if (current_player > 4) {current_player = 1;}
-                get_board(my_player_id);
-            } else {           
-                game_state = PICKMARBLE;
-
-            }
-            updatePlayerInfo();
+            rolled();
         }
     }
 }
 
 // listen for mouse clicks
 // manage based on game state
-canvas.addEventListener('click', (evt) => {
+if (enable_ai!=1) {
+    canvas.addEventListener('click', (evt) => {
 
-  var rect = canvas.getBoundingClientRect(), // abs. size of element
-  scaleX = canvas.width / rect.width,    // relationship bitmap vs. element for X
-  scaleY = canvas.height / rect.height;  // relationship bitmap vs. element for Y
-  const pos = {
-      x: (evt.clientX - rect.left) * scaleX,   // scale mouse coordinates after they have
-      y: (evt.clientY - rect.top) * scaleY     // been adjusted to be relative to element
-  };
+      var rect = canvas.getBoundingClientRect(), // abs. size of element
+      scaleX = canvas.width / rect.width,    // relationship bitmap vs. element for X
+      scaleY = canvas.height / rect.height;  // relationship bitmap vs. element for Y
+      const pos = {
+          x: (evt.clientX - rect.left) * scaleX,   // scale mouse coordinates after they have
+          y: (evt.clientY - rect.top) * scaleY     // been adjusted to be relative to element
+      };
   
-  if (game_state == PICKDEST || game_state == PICKMARBLE ) {
-      handleDivotSelection(pos);
-  } else if (game_state == ROLLDIE) { 
-      handleRollDie(pos);
-  }
+      if (game_state == PICKDEST || game_state == PICKMARBLE ) {
+          handleDivotSelection(pos);
+      } else if (game_state == ROLLDIE) { 
+          handleRollDie(pos);
+      }
 
-});
+    });
+}
 
+if (enable_ai == 1) setInterval(aiController, 5000);
 
+function aiController()
+{
+    console.log("--- do some ai here --");
 
+    if (game_state == PICKDEST || game_state == PICKMARBLE ) {
+        //handleDivotSelection(pos);
+    } else if (game_state == ROLLDIE) {                                                                                                        
+        rolled();
+    }
+}
