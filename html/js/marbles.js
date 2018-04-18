@@ -197,50 +197,53 @@ function returnToHooseGow(marble_id) {
         }
     }
 }
-
 // handle "divot" selection - could be marble or divot.
 function handleDivotSelection(pos)
 {
-      divot_col = Math.round((pos.x -30)/30); // divot, as in hole in the board for a marble.
-      divot_row = Math.round((pos.y -30)/30);
+      var divot_col = Math.round((pos.x -30)/30); // divot, as in hole in the board for a marble.
+      var divot_row = Math.round((pos.y -30)/30);
       if (board_grid[divot_col][divot_row]) {
-          if (game_state == PICKMARBLE) {
-              // do some work (eg, is it a marble, is it your marble, highlight the marble, etc etc)
-              
-              if (board_grid[divot_col][divot_row] > 1) { // picked a marble
-                  if (isMyMarble(divot_col,divot_row)) {
-                      picked_marble.col =  divot_col;
-                      picked_marble.row = divot_row;
-                      picked_marble.marble = board_grid[divot_col][divot_row];
-                      board_grid[divot_col][divot_row]= board_grid[divot_col][divot_row] * 100; 
-                      game_state = PICKDEST;
-                  }
-              }
-          } else { // PICKDEST
-              // do some work (eg. is it a valid dest (are you jumping your own marble, is it within last_roll places, etc etc)
-              if (destInChoices(choices, picked_marble, {"col":divot_col, "row":divot_row, "marble":board_grid[divot_col][divot_row] })) {
-                  target = board_grid[divot_col][divot_row];
-                  returnToHooseGow(target);
-                  board_grid[divot_col][divot_row] = picked_marble.marble;
-                  board_grid[picked_marble.col][picked_marble.row] = 1;
-                  if (last_roll == 6 || last_roll == 1) { // and the roll was used...
-                      game_state = ROLLDIE;
-                  } else {
-                      game_state = WAITING;
-                      current_player ++;
-                      if (current_player >4) current_player=1;
-                      updatePlayerInfo();
-                  }
-                  put_board({ "board_grid": board_grid, "player":my_player_id});
-              } else {
-                  // invalid destination, switch gamestate to PICKMARBLE
-                  board_grid[picked_marble.col][picked_marble.row]= board_grid[picked_marble.col][picked_marble.row] / 100; 
-                  picked_marble={col:0,row:0,marble:0};
-                  game_state=PICKMARBLE;
-                  
-              }
-          }
+          marbles(divot_col, divot_row);
       }
+}
+
+function marbles(divot_col, divot_row)
+{
+    if (game_state == PICKMARBLE) {
+        // do some work (eg, is it a marble, is it your marble, highlight the marble, etc etc)
+        if (board_grid[divot_col][divot_row] > 1) { // picked a marble
+            if (isMyMarble(divot_col,divot_row)) {
+                picked_marble.col =  divot_col;
+                picked_marble.row = divot_row;
+                picked_marble.marble = board_grid[divot_col][divot_row];
+                board_grid[divot_col][divot_row]= board_grid[divot_col][divot_row] * 100; 
+                game_state = PICKDEST;
+            }
+        }
+    } else { // PICKDEST
+        // do some work (eg. is it a valid dest (are you jumping your own marble, is it within last_roll places, etc etc)
+        if (destInChoices(choices, picked_marble, {"col":divot_col, "row":divot_row, "marble":board_grid[divot_col][divot_row] })) {
+            target = board_grid[divot_col][divot_row];
+            returnToHooseGow(target);
+            board_grid[divot_col][divot_row] = picked_marble.marble;
+            board_grid[picked_marble.col][picked_marble.row] = 1;
+            if (last_roll == 6 || last_roll == 1) { // and the roll was used...
+                game_state = ROLLDIE;
+            } else {
+                game_state = WAITING;
+                current_player ++;
+                if (current_player >4) current_player=1;
+                updatePlayerInfo();
+            }
+            put_board({ "board_grid": board_grid, "player":my_player_id});
+        } else {
+            // invalid destination, switch gamestate to PICKMARBLE
+            board_grid[picked_marble.col][picked_marble.row]= board_grid[picked_marble.col][picked_marble.row] / 100; 
+            picked_marble={col:0,row:0,marble:0};
+            game_state=PICKMARBLE;
+            
+        }
+    }
 }
 
 function anyChoices(choices)
@@ -300,15 +303,23 @@ if (enable_ai!=1) {
     });
 }
 
-if (enable_ai == 1) setInterval(aiController, 5000);
+if (enable_ai == 1) setInterval(aiController, 1000);
 
 function aiController()
 {
     console.log("--- do some ai here --");
 
     if (game_state == PICKDEST || game_state == PICKMARBLE ) {
-        //handleDivotSelection(pos);
+        // there will be at least one entry (or we would have been reject at rolled)
+        // locate its position on the board
+        // call marbles(pos.x,pos.y)
+        // for now, skip ahead
+        game_state = WAITING;
+        current_player ++;
+        if (current_player >4) current_player=1;
+        updatePlayerInfo();
     } else if (game_state == ROLLDIE) {                                                                                                        
         rolled();
+        console.log("rolled a " + last_roll);
     }
 }
