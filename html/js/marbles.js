@@ -147,7 +147,7 @@ function destInChoices(choices,picked_marble, dest)
 //  /  \  
 // 0    1 
 var gows_str = `[ 
-    [{ "row":1,  "col":13}, {"row":2,  "col":12}, {"row":3, "col":13}, {"row":4,  "col":10}], 
+    [{ "row":1,  "col":13}, {"row":2,  "col":12}, {"row":3, "col":11}, {"row":4,  "col":10}], 
     [{ "row":13, "col":13}, {"row":12, "col":12}, {"row":11,"col":11}, {"row":10, "col":10}], 
     [{ "row":13, "col":1 }, {"row":12, "col":2 }, {"row":11,"col":3 }, {"row":10, "col":4 }], 
     [{ "row":1,  "col":1 }, {"row":2,  "col":2 }, {"row":3, "col":3 }, {"row":4,  "col":1 }] 
@@ -316,7 +316,7 @@ if (enable_ai!=1 && skip_me!=1) {
 }
 
 if (enable_ai == 1) setInterval(aiController, 1000);
-if (skip_me == 1) setInterval(skipController, 100);
+if (skip_me == 1) setInterval(skipController, 1000);
 
 function skipController()
 {
@@ -338,12 +338,12 @@ function aiController()
                 break;
             }
         }
-        var pos;
+        var pos={"col":-1,"row":-1};
         // hey, lets grab a hoosegow marble, why not?
         if      (board_grid[1][13] > 1) pos = {"col":1, "row":13};
         else if (board_grid[2][12] > 1) pos = {"col":2, "row":12};
         else if (board_grid[3][11] > 1) pos = {"col":3, "row":11};
-        else if (board_grid[1][10] > 1) pos = {"col":4, "row":10};
+        else if (board_grid[4][10] > 1) pos = {"col":4, "row":10};
         
         for (var i = 0; i<the_path.length;i++) {
             var testpos = the_path[i];
