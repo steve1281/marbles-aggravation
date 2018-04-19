@@ -30,6 +30,7 @@ var colorToString = ["WHITE", "RED", "GREEN", "BLUE", "YELLOW"];
 
 var my_player_id = parseInt(getParameterByName("player")); // RED; // this needs to be set by a call to the back end.
 var enable_ai = parseInt(getParameterByName("enable_ai")); if (isNaN(enable_ai)) enable_ai=0;
+var skip_me = parseInt(getParameterByName("skip_me")); if (isNaN(skip_me)) skip_me=0;
  
 var choices=[];
 var board_grid = []
@@ -125,6 +126,12 @@ function updatePlayerInfo()
 }
 function destInChoices(choices,picked_marble, dest)
 {
+    if (enable_ai ==1 ) {
+        console.log("choices: "+JSON.stringify(choices));
+        console.log("picked_marble: " + JSON.stringify(picked_marble));
+        console.log("dest: " + JSON.stringify(dest));
+    }
+
     p = findPos(dest);
     var marble_id = picked_marble.marble;
     var idx = marble_id - (10*my_player_id);
@@ -209,6 +216,11 @@ function handleDivotSelection(pos)
 
 function marbles(divot_col, divot_row)
 {
+    if (enable_ai ==1) {
+        console.log("marbles; game_state:"+game_state +" divot_col: "+divot_col+" divot_row: " + divot_row);
+        console.log("marbles; picked_marble " + JSON.stringify(picked_marble));
+    }
+
     if (game_state == PICKMARBLE) {
         // do some work (eg, is it a marble, is it your marble, highlight the marble, etc etc)
         if (board_grid[divot_col][divot_row] > 1) { // picked a marble
@@ -283,7 +295,7 @@ function handleRollDie(pos)
 
 // listen for mouse clicks
 // manage based on game state
-if (enable_ai!=1) {
+if (enable_ai!=1 && skip_me!=1) {
     canvas.addEventListener('click', (evt) => {
 
       var rect = canvas.getBoundingClientRect(), // abs. size of element
@@ -304,20 +316,51 @@ if (enable_ai!=1) {
 }
 
 if (enable_ai == 1) setInterval(aiController, 1000);
+if (skip_me == 1) setInterval(skipController, 100);
+
+function skipController()
+{
+    if (game_state != WAITING) {
+        game_state = WAITING;
+        current_player++; if (current_player > 4) {current_player = 1;}
+        get_board(my_player_id);
+        updatePlayerInfo();
+    }
+}
 
 function aiController()
 {
-    console.log("--- do some ai here --");
-
-    if (game_state == PICKDEST || game_state == PICKMARBLE ) {
-        // there will be at least one entry (or we would have been reject at rolled)
-        // locate its position on the board
-        // call marbles(pos.x,pos.y)
-        // for now, skip ahead
-        game_state = WAITING;
-        current_player ++;
-        if (current_player >4) current_player=1;
-        updatePlayerInfo();
+    if (game_state == PICKMARBLE) {
+        for (var m = 0; m<4; m++) {
+            if (choices[m].length >0) {
+                pm = m + my_player_id*10;
+                dm = choices[m][0];
+                break;
+            }
+        }
+        var pos;
+        // hey, lets grab a hoosegow marble, why not?
+        if      (board_grid[1][13] > 1) pos = {"col":1, "row":13};
+        else if (board_grid[2][12] > 1) pos = {"col":2, "row":12};
+        else if (board_grid[3][11] > 1) pos = {"col":3, "row":11};
+        else if (board_grid[1][10] > 1) pos = {"col":4, "row":10};
+        
+        for (var i = 0; i<the_path.length;i++) {
+            var testpos = the_path[i];
+            if (board_grid[testpos.col][testpos.row] == pm) {
+                pos.col = testpos.col;
+                pos.row = testpos.row;
+                break;
+             }
+        }
+ 
+        picked_marble.col =  pos.col;
+        picked_marble.row = pos.row;
+        picked_marble.marble = board_grid[pos.col][pos.row];
+        board_grid[pos.col][pos.row]= board_grid[pos.col][pos.row] * 100; 
+        game_state = PICKDEST;
+        dest = the_path[dm]; 
+        marbles(dest.col, dest.row);
     } else if (game_state == ROLLDIE) {                                                                                                        
         rolled();
         console.log("rolled a " + last_roll);
