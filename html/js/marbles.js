@@ -89,6 +89,8 @@ function drawWood()
     ctx.drawImage(blueprint_background,0,0);
 }
 
+var die = new Die(die_offsetx,die_offsety);
+
 // main draw loop
 function draw() {
     // request future draw call.
@@ -101,7 +103,7 @@ function draw() {
         drawWood();
         drawBoard(board_grid);
         drawText();
-        drawDie(last_roll);
+        die.drawDie(last_roll);
     }
 }
 
