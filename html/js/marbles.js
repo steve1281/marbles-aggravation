@@ -225,6 +225,12 @@ function handleDivotSelection(pos)
       }
 }
 
+function checkWin()
+{
+    // if all four home positions have a marble then we have a winner
+    return (board_grid[7][12]>1) && (board_grid[7][11]>1) && (board_grid[7][10]>1) && (board_grid[7][9]>1);
+}
+
 function marbles(divot_col, divot_row)
 {
     if (enable_ai ==1) {
@@ -250,7 +256,10 @@ function marbles(divot_col, divot_row)
             returnToHooseGow(target);
             board_grid[divot_col][divot_row] = picked_marble.marble;
             board_grid[picked_marble.col][picked_marble.row] = 1;
-            if (last_roll == 6 || last_roll == 1) { // and the roll was used...
+            if (checkWin()) {
+                game_state = WIN;
+                updatePlayerInfo();
+            } else if (last_roll == 6 || last_roll == 1) { // and the roll was used...
                 game_state = ROLLDIE;
             } else {
                 game_state = WAITING;
@@ -311,7 +320,7 @@ if (enable_ai!=1 && skip_me!=1) {
 
       var rect = canvas.getBoundingClientRect(), // abs. size of element
       scaleX = canvas.width / rect.width,    // relationship bitmap vs. element for X
-      scaleY = canvas.height / rect.height;  // relationship bitmap vs. element for Y
+      scaleY = canvas.height / rect.height;  // relationship bitmap vs. element for Y;
       const pos = {
           x: (evt.clientX - rect.left) * scaleX,   // scale mouse coordinates after they have
           y: (evt.clientY - rect.top) * scaleY     // been adjusted to be relative to element
