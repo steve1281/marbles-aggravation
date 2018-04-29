@@ -35,6 +35,12 @@ var skip_me = parseInt(getParameterByName("skip_me")); if (isNaN(skip_me)) skip_
 var choices=[];
 var board_grid = []
 
+// refresh rate and loop hookup
+var fpsInterval = 1000/60;  
+var last=Date.now();
+var startTime=last;
+var picked_marble={col:0,row:0,marble:0};
+
 
 // clear screen 
 function clearScreen()
@@ -66,30 +72,45 @@ function setplayer()
     }
 }
 
-
-// -- draw misc player name, id, etc etc
-function drawText()
+function Text() 
 {
-    ctx.font = "18px Arial";
-    ctx.fillStyle = colorToString[my_player_id]; //"white"; //"#34282c";
-    ctx.fillText("My Colour: " + colorToString[my_player_id] , 25, 20);
+    this.draw = function() {
+        ctx.font = "18px Arial";
+        ctx.fillStyle = colorToString[my_player_id]; //"white"; //"#34282c";
+        ctx.fillText("My Colour: " + colorToString[my_player_id] , 25, 20);
 
-    ctx.fillStyle = colorToString[current_player]; //"white"; //"#34282c";
-    ctx.fillText("Current Colour: " + colorToString[current_player], 225, 20);
-    ctx.fillStyle = "white"; //#f0f0f0";
-    ctx.fillText(" " + game_state_toString(), canvas.width-185, 20);
-    ctx.fillStyle = "white"; //#f0f0f0";
-    ctx.fillText(" " + JSON.stringify(choices),185,canvas.height-20);
+        ctx.fillStyle = colorToString[current_player]; //"white"; //"#34282c";
+        ctx.fillText("Current Colour: " + colorToString[current_player], 225, 20);
+        ctx.fillStyle = "white"; //#f0f0f0";
+        ctx.fillText(" " + game_state_toString(), canvas.width-185, 20);
+        ctx.fillStyle = "white"; //#f0f0f0";
+        ctx.fillText(" " + JSON.stringify(choices),185,canvas.height-20);
+    }
 }
 
-function drawWood()
-{
-    var blueprint_background = new Image();
-    blueprint_background.src = 'images/wood.jpg'; 
-    ctx.drawImage(blueprint_background,0,0);
+function Wood(file) {
+    this.blueprint_background = new Image();
+    this.blueprint_background.src = file;
+    this.draw = function() {
+        ctx.drawImage(this.blueprint_background,0,0);
+    }
 }
 
-var die = new Die(die_offsetx,die_offsety);
+
+var board = undefined;
+var die  = undefined ;
+var wood = undefined;
+var text = undefined;
+document.addEventListener("DOMContentLoaded", function(event) {
+    console.log("DOM fully loaded and parsed");
+    board = new Board();
+    die  = new Die(die_offsetx,die_offsety);
+    wood = new Wood('images/wood.jpg');
+    text = new Text();
+    draw();
+    get_board(my_player_id);
+    get_player();
+});
 
 // main draw loop
 function draw() {
@@ -100,32 +121,20 @@ function draw() {
     if (elapsed > fpsInterval) {
         last = now - (elapsed % fpsInterval);
         clearScreen();
-        drawWood();
-        drawBoard(board_grid);
-        drawText();
+        wood.draw();
+        board.draw(board_grid);
+        text.draw();
         die.drawDie(last_roll);
     }
 }
 
-// refresh rate and loop hookup
-var fpsInterval = 1000/60;  
-var last=Date.now();
-var startTime=last;
-
-// call drawing loop
-draw();
-
-// call get board (must be called at least once)
-get_board(my_player_id);
-// call get player -- modify this; we should register ourselves, and that should call this.
-get_player();
-var picked_marble={col:0,row:0,marble:0};
 
 function updatePlayerInfo()
 {
     var next_player = { "current_player": current_player, "player_name": "", "last_roll":last_roll };
     put_next_player(next_player);
 }
+
 function destInChoices(choices,picked_marble, dest)
 {
     if (enable_ai ==1 ) {
@@ -149,10 +158,10 @@ function destInChoices(choices,picked_marble, dest)
 //  /  \  
 // 0    1 
 var gows_str = `[ 
-    [{ "row":1,  "col":13}, {"row":2,  "col":12}, {"row":3, "col":11}, {"row":4,  "col":10}], 
-    [{ "row":13, "col":13}, {"row":12, "col":12}, {"row":11,"col":11}, {"row":10, "col":10}], 
     [{ "row":13, "col":1 }, {"row":12, "col":2 }, {"row":11,"col":3 }, {"row":10, "col":4 }], 
-    [{ "row":1,  "col":1 }, {"row":2,  "col":2 }, {"row":3, "col":3 }, {"row":4,  "col":1 }] 
+    [{ "row":13, "col":13}, {"row":12, "col":12}, {"row":11,"col":11}, {"row":10, "col":10}], 
+    [{ "row":1,  "col":13}, {"row":2,  "col":12}, {"row":3, "col":11}, {"row":4,  "col":10}], 
+    [{ "row":1,  "col":1 }, {"row":2,  "col":2 }, {"row":3, "col":3 }, {"row":4,  "col":4 }] 
 ]`;
 var gows = JSON.parse(gows_str);
 
