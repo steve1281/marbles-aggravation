@@ -1,0 +1,9 @@
+{
+    "broadcast":0,
+    "messages": [
+        {
+            "player_id":-1,
+            "message": "Game Initialized."
+        }
+    ]
+}

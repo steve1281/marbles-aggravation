@@ -13,11 +13,13 @@ public class ModelManager {
     private  SimpleGameBoard simpleGameBoard = null;
     private  CurrentPlayer currentPlayer = null;
     private  GameDefaults gameDefaults = null;
+    private  MessageBroadcast messages = null;
 
     protected ModelManager(){
         initialGameDefaults();
         initialCurrentPlayer();
         initialSimpleGameBoard();
+        initialMessages();
     }
 
     public static ModelManager getInstance()
@@ -33,6 +35,17 @@ public class ModelManager {
         initialGameDefaults();
         initialCurrentPlayer();
         initialSimpleGameBoard();
+    }
+
+    private void initialMessages()
+    {
+        ObjectMapper objectMapper = new ObjectMapper();
+        File file = new File(Constants.JSON_FOLDER+"messages.json");
+        try {
+            setMessages(objectMapper.readValue(file, MessageBroadcast.class));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initialSimpleGameBoard()
@@ -112,5 +125,13 @@ public class ModelManager {
 
     public void setSimpleGameBoard(SimpleGameBoard simpleGameBoard) {
         this.simpleGameBoard = simpleGameBoard;
+    }
+
+    public MessageBroadcast getMessages() {
+        return messages;
+    }
+
+    public void setMessages(MessageBroadcast messages) {
+        this.messages = messages;
     }
 }

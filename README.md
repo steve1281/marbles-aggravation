@@ -20,6 +20,7 @@ java -jar ./build/libs/marbles-aggravation.jar
 ```
 curl -X GET http://192.168.100.167:9998/board | python -m json.tool
 curl -X POST http://localhost:9998/board -H Content-Type:application/json -d @json/set_game_board.json
+curl -X GET -L  localhost:9998/message/getmessages | python -m json.tool
 ```
 
 ## Testing website
